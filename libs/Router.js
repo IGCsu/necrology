@@ -1,4 +1,4 @@
-import { AuditLogEvent, Client, Events, Guild } from 'discord.js';
+import { AuditLogEvent, Client, Events } from 'discord.js';
 import { Logger } from './Logger.js';
 import { Commands } from './Commands.js';
 import { Necrology } from '../mvc/controllers/Necrology.js';
@@ -19,65 +19,54 @@ export class Router {
 
 			if (!Commands.has(name)) return;
 
-			/**
-			 * Логгер
-			 * @type {Logger}
-			 */
-			int.logger = Logger.init(int.guildId);
-			int.logger.info('Start "' + name + '" command');
+			const logger = Logger.init(int.guildId);
+			const config = Config.getOrCreate(int.guildId);
+			const lang = Lang.get(session.config.lang, int.locale);
 
-			/**
-			 * Конфигурация
-			 * @type {Config}
-			 */
-			int.config = Config.getOrCreate(int.guildId);
+			logger.info('Start "' + name + '" command');
 
-			/**
-			 * Локализация
-			 * @type {Lang}
-			 */
-			int.lang = Lang.get(int.config.lang, int.locale);
-
-			await Commands.get(name).func(int);
+			await Commands.get(name).func({
+				int: int,
+				logger: logger,
+				config: config,
+				lang: lang
+			});
 		});
 
 		client.on(Events.GuildAuditLogEntryCreate, async (entry, guild) => {
 
-			/**
-			 * ID сообщества дискорда
-			 * @type {Guild}
-			 */
-			entry.guild = guild;
+			const logger = Logger.init(guild.id);
 
-			/**
-			 * Логгер
-			 * @type {Logger}
-			 */
-			entry.logger = Logger.init(entry.guild.id);
+			// if (!Config.has(guild.id)) {
+			// 	logger.info('Guild not configured, skip');
+			// 	return;
+			// }
 
-			if (Config.has(entry.guild.id)) {
-				entry.logger.info('Guild not configured, ignore');
+			const config = Config.getOrCreate(guild.id);
+
+			config.channelId = '924352019236552744';
+
+			if (!config.channelId) {
+				logger.info('Channel ID not specified, skip');
 				return;
 			}
 
-			/**
-			 * Конфигурация
-			 * @type {Config}
-			 */
-			entry.config = Config.get(entry.guild.id);
+			const lang = Lang.get(config.lang);
 
-			/**
-			 * Локализация
-			 * @type {Lang}
-			 */
-			entry.lang = Lang.get(entry.config.lang);
+			let session = {
+				entry: entry,
+				guild: guild,
+				logger: logger,
+				config: config,
+				lang: lang
+			};
 
 			switch (entry.action) {
 				case AuditLogEvent.MemberUpdate:
-					await Necrology.guildMemberUpdate(entry);
+					await Necrology.guildMemberUpdate(session);
 					break;
 				case AuditLogEvent.MemberBanAdd:
-					await Necrology.guildBanAdd(entry);
+					await Necrology.guildBanAdd(session);
 					break;
 			}
 		});

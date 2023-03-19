@@ -4,10 +4,14 @@ export class Help {
 
 	/**
 	 * Команда выводит help сообщение
-	 * @param {ChatInputCommandInteraction} int
+	 * @param {Object} session
+	 * @param {ChatInputCommandInteraction} session.int
+	 * @param {Logger} session.logger
+	 * @param {Config} session.config
+	 * @param {Lang} session.lang
 	 */
-	static async helpCommand (int) {
-		await int.reply({
+	static async helpCommand (session) {
+		await session.int.reply({
 			content: 'help'
 		});
 	}

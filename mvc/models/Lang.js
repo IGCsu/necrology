@@ -56,14 +56,18 @@ export class Lang {
 	static get (langGlobal, langLocal) {
 		let lang;
 
-		lang = langLocal.substring(0, 2);
-		if (this.list[lang]) {
-			return this.list[lang];
+		if (langLocal) {
+			lang = langLocal.substring(0, 2);
+			if (this.list[lang]) {
+				return this.list[lang];
+			}
 		}
 
-		lang = langGlobal.substring(0, 2);
-		if (this.list[lang]) {
-			return this.list[lang];
+		if (langGlobal) {
+			lang = langGlobal.substring(0, 2);
+			if (this.list[lang]) {
+				return this.list[lang];
+			}
 		}
 
 		return this.list[this.DEFAULT_LANG];
