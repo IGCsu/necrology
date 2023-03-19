@@ -1,5 +1,5 @@
 import { Logger } from './Logger.js';
-import { Help } from '../src/controllers/Help.js';
+import { Help } from '../mvc/controllers/Help.js';
 
 export class Commands {
 

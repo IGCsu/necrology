@@ -6,7 +6,12 @@ import { DB } from './libs/DB.js';
 
 dotenv.config();
 
-const client = new Client({ intents: [GatewayIntentBits.Guilds] });
+const client = new Client({
+	intents: [
+		GatewayIntentBits.Guilds,
+		GatewayIntentBits.GuildModeration
+	]
+});
 
 DB.init();
 Router.init(client);
