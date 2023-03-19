@@ -21,7 +21,7 @@ export class Config {
 	 * ID сообщества Дискорда
 	 * @type {string}
 	 */
-	id;
+	guildId;
 
 	/**
 	 * Выбранная локализация
@@ -36,31 +36,31 @@ export class Config {
 	channelId;
 
 	/**
-	 * @param {string} data.id
+	 * @param {string} data.guildId
 	 * @param {string} data.lang
 	 * @param {string} data.channelId
 	 */
 	constructor (data) {
-		if (data.id) this.id = data.id;
+		if (data.guildId) this.guildId = data.guildId;
 		if (data.lang) this.lang = data.lang;
 		if (data.channelId) this.channelId = data.channelId;
 	}
 
 	/**
 	 * Возвращает конфигурацию сервера
-	 * @param id ID сообщества Дискорда
+	 * @param guildId ID сообщества Дискорда
 	 * @return {Config}
 	 */
-	static get (id) {
-		if (this.configs[id]) {
-			return this.configs[id];
+	static get (guildId) {
+		if (this.configs[guildId]) {
+			return this.configs[guildId];
 		}
 
-		const config = DB.query('SELECT * FROM ' + this.TABLE_NAME + ' WHERE id = ? LIMIT 1', [id]);
+		const config = DB.query('SELECT * FROM ' + this.TABLE_NAME + ' WHERE guildId = ? LIMIT 1', [guildId]);
 
-		const data = config[0] ?? { id: id };
+		const data = config[0] ?? { guildId: guildId };
 
-		return this.configs[id] = new this(data);
+		return this.configs[guildId] = new this(data);
 	}
 
 }
