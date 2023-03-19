@@ -3,6 +3,7 @@ import { Logger } from './Logger.js';
 import { Commands } from './Commands.js';
 import { Necrology } from '../mvc/controllers/Necrology.js';
 import { Config } from '../mvc/models/Config.js';
+import { Lang } from '../mvc/models/Lang.js';
 
 export class Router {
 
@@ -24,6 +25,18 @@ export class Router {
 			 */
 			int.logger = Logger.init(int.guildId);
 			int.logger.info('Start "' + name + '" command');
+
+			/**
+			 * Конфигурация
+			 * @type {Config}
+			 */
+			int.config = Config.getOrCreate(int.guildId);
+
+			/**
+			 * Локализация
+			 * @type {Lang}
+			 */
+			int.lang = Lang.get(int.config.lang, int.locale);
 
 			await Commands.get(name).func(int);
 		});
@@ -52,6 +65,12 @@ export class Router {
 			 * @type {Config}
 			 */
 			entry.config = Config.get(entry.guild.id);
+
+			/**
+			 * Локализация
+			 * @type {Lang}
+			 */
+			entry.lang = Lang.get(entry.config.lang);
 
 			switch (entry.action) {
 				case AuditLogEvent.MemberUpdate:

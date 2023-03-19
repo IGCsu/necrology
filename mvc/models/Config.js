@@ -1,4 +1,5 @@
 import { DB } from '../../libs/DB.js';
+import { Lang } from './Lang.js';
 
 /**
  * Конфигурация бота для сообщества
@@ -27,7 +28,7 @@ export class Config {
 	 * Выбранная локализация
 	 * @type {string}
 	 */
-	lang = 'ru';
+	lang = Lang.DEFAULT_LANG;
 
 	/**
 	 * ID канала Дискорда для вывода результата
