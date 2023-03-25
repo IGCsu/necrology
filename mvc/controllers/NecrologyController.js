@@ -1,4 +1,7 @@
 import { GuildAuditLogsEntry } from 'discord.js';
+import { Action } from '../models/Action.js';
+import { Utils } from '../../libs/Utils.js';
+import { NecrologyView } from '../view/NecrologyView.js';
 
 export class NecrologyController {
 
@@ -42,18 +45,16 @@ export class NecrologyController {
 	 * @param {EntrySession} s
 	 */
 	static async mute (s) {
-		const now = new Date();
-		s.diffTime = this.getTimeDiff(s.newTimeout, now);
+		s.diffTime = this.getTimeDiff(s.newTimeout, s.timestamp);
 
-		// const threadName = now.toJSON() + ' ' + s.diffTime + ' ' + Utils.member2name(s.targetMember, true, true);
-		//
-		// const msg = await s.channel.send(NecrologyView.mute(s));
-		// const thread = await msg.startThread({ name: threadName });
-		//
-		// this.cache[after.id] = {
-		// 	until: after.communicationDisabledUntilTimestamp,
-		// 	messageId: msg.id
-		// };
+		const threadName = s.timestamp.toJSON() + ' ' + s.diffTime + ' ' + Utils.member2name(s.targetMember, true, true);
+
+		s.message = await s.channel.send(NecrologyView.mute(s));
+		s.thread = await s.message.startThread({ name: threadName });
+
+		const action = Action.createFromEntrySession(Action.TYPE_MUTE, s);
+
+		console.log(action);
 	}
 
 	/**

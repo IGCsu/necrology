@@ -1,20 +1,23 @@
 import { DB } from '../../libs/DB.js';
 import { Lang } from './Lang.js';
+import { BaseModel } from './BaseModel.js';
 
 /**
  * Конфигурация бота для сообщества
  */
-export class Config {
+export class Config extends BaseModel {
 
-	/**
-	 * Наименование таблицы в БД
-	 * @type {string}
-	 */
 	static TABLE_NAME = 'configs';
+	static PRIMARY_KEY = 'guildId';
+	static FIELDS = {
+		guildId: 'string',
+		lang: 'string',
+		channelId: 'string'
+	};
 
 	/**
 	 * Кеш моделей
-	 * @type {Object.<string, Config>}
+	 * @type {Object.<number, Config>}
 	 */
 	static configs = {};
 
@@ -37,20 +40,14 @@ export class Config {
 	channelId;
 
 	/**
-	 * Показывает сохранена ли модель в БД
-	 * @type {boolean}
-	 */
-	saved = true;
-
-	/**
 	 * @param {Object} data
+	 * @param {boolean} [saved=false] определяет, сохранена ли модель в БД
 	 */
-	constructor (data) {
+	constructor (data, saved) {
+		super(data, saved);
 		if (data.guildId) this.guildId = data.guildId;
 		if (data.lang) this.lang = data.lang;
 		if (data.channelId) this.channelId = data.channelId;
-
-		if (data.saved) this.saved = data.saved;
 	}
 
 	/**
@@ -65,7 +62,7 @@ export class Config {
 
 		const config = DB.query('SELECT * FROM ' + this.TABLE_NAME + ' WHERE guildId = ? LIMIT 1', [guildId]);
 
-		return config[0] ? new this(config[0]) : undefined;
+		return config[0] ? this.configs[guildId] = new this(config[0], true) : undefined;
 	}
 
 	/**
@@ -73,7 +70,6 @@ export class Config {
 	 * @param {string} data.guildId
 	 * @param {string} [data.lang]
 	 * @param {string} [data.channelId]
-	 * @param {boolean} [data.saved]
 	 * @return {Config}
 	 */
 	static create (data) {
@@ -85,9 +81,10 @@ export class Config {
 			if (!data[key]) data[key] = defaultData[key];
 		}
 
-		data.saved = false;
+		const config = new this(data);
+		config.save();
 
-		return this.configs[data.guildId] = new this(data);
+		return this.configs[config.guildId] = config;
 	}
 
 	/**
@@ -96,24 +93,7 @@ export class Config {
 	 * @return {Config}
 	 */
 	static getOrCreate (guildId) {
-		if (this.configs[guildId]) {
-			return this.configs[guildId];
-		}
-
-		const config = DB.query('SELECT * FROM ' + this.TABLE_NAME + ' WHERE guildId = ? LIMIT 1', [guildId]);
-
-		return this.configs[guildId] = config[0]
-			? new this(config[0])
-			: this.create({ guildId: guildId });
-	}
-
-	/**
-	 * Возвращает наличие конфигурации сообщества
-	 * @param guildId ID сообщества Дискорда
-	 * @return {boolean}
-	 */
-	static has (guildId) {
-		return !!this.get(guildId);
+		return this.get(guildId) ?? this.create({ guildId: guildId });
 	}
 
 }

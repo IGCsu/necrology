@@ -6,7 +6,7 @@ export class NecrologyView {
 	 *
 	 * @param {EntrySession} s
 	 * @param {boolean} [isUnmute=false]
-	 * @return {{embed: EmbedBuilder[]}}
+	 * @return {{embeds: EmbedBuilder[]}}
 	 */
 	static mute (s, isUnmute) {
 		let embed = new EmbedBuilder()
@@ -18,14 +18,14 @@ export class NecrologyView {
 		// TODO: Допилить мессадж мута и анмута
 
 		return {
-			embed: [embed]
+			embeds: [embed]
 		};
 	}
 
 	/**
 	 *
 	 * @param {EntrySession} s
-	 * @return {{embed: EmbedBuilder[]}}
+	 * @return {{embeds: EmbedBuilder[]}}
 	 */
 	static unmute (s) {
 		this.mute(s, true);

@@ -30,12 +30,20 @@ export class Session {
 	logger;
 
 	/**
+	 * Текущая временная метка
+	 * @type {Date}
+	 */
+	timestamp;
+
+	/**
 	 * @param {Guild} guild
 	 * @param {Config} [config]
 	 * @param {Lang} [lang]
 	 * @param {Logger} [logger]
 	 */
 	constructor (guild, config, lang, logger) {
+		this.timestamp = new Date();
+
 		this.guild = guild;
 		this.config = config ?? Config.getOrCreate(guild.id);
 		this.lang = lang ?? Lang.get(this.config.lang);

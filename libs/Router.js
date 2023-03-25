@@ -30,9 +30,6 @@ export class Router {
 
 			const s = EntrySession.init(entry, guild);
 
-			// TODO: Запил для тестирования
-			s.config.channelId = '924352019236552744';
-
 			if (!s.config.channelId) {
 				s.logger.info('Channel ID not specified, skip');
 				return;
