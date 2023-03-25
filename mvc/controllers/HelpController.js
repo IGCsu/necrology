@@ -1,18 +1,14 @@
-import { ChatInputCommandInteraction } from 'discord.js';
-import { HelpView } from '../view/HelpView.js'
+import { HelpView } from '../view/HelpView.js';
+import { InteractionSession } from '../../libs/Session/InteractionSession.js';
 
 export class HelpController {
 
 	/**
 	 * Команда выводит help сообщение
-	 * @param {Object} session
-	 * @param {ChatInputCommandInteraction} session.int
-	 * @param {Logger} session.logger
-	 * @param {Config} session.config
-	 * @param {Lang} session.lang
+	 * @param {InteractionSession} s
 	 */
-	static async helpCommand (session) {
-		await session.int.reply(HelpView.commandsList());
+	static async helpCommand (s) {
+		await s.int.reply(HelpView.commandsList());
 	}
 
 }
