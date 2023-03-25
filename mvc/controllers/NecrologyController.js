@@ -1,7 +1,7 @@
 import { GuildAuditLogsEntry, Guild } from 'discord.js';
 import { Utils } from '../../libs/Utils.js';
 
-export class Necrology {
+export class NecrologyController {
 
 	/**
 	 * Обработка изменение таймаута участника

@@ -1,5 +1,5 @@
 import { Logger } from './Logger.js';
-import { Help } from '../mvc/controllers/Help.js';
+import { HelpController } from '../mvc/controllers/HelpController.js';
 
 export class Commands {
 
@@ -10,7 +10,7 @@ export class Commands {
 	static list = {
 
 		help: {
-			func: Help.helpCommand,
+			func: HelpController.helpCommand,
 			name: 'help',
 			description: 'Bot Information',
 			descriptionLocalizations: {

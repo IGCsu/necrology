@@ -1,6 +1,7 @@
 import { ChatInputCommandInteraction } from 'discord.js';
+import { HelpView } from '../view/HelpView.js'
 
-export class Help {
+export class HelpController {
 
 	/**
 	 * Команда выводит help сообщение
@@ -11,9 +12,7 @@ export class Help {
 	 * @param {Lang} session.lang
 	 */
 	static async helpCommand (session) {
-		await session.int.reply({
-			content: 'help'
-		});
+		await session.int.reply(HelpView.commandsList());
 	}
 
 }

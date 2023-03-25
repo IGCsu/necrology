@@ -1,7 +1,7 @@
 import { AuditLogEvent, Client, Events } from 'discord.js';
 import { Logger } from './Logger.js';
 import { Commands } from './Commands.js';
-import { Necrology } from '../mvc/controllers/Necrology.js';
+import { NecrologyController } from '../mvc/controllers/NecrologyController.js';
 import { Config } from '../mvc/models/Config.js';
 import { Lang } from '../mvc/models/Lang.js';
 
@@ -63,10 +63,10 @@ export class Router {
 
 			switch (entry.action) {
 				case AuditLogEvent.MemberUpdate:
-					await Necrology.guildMemberUpdate(session);
+					await NecrologyController.guildMemberUpdate(session);
 					break;
 				case AuditLogEvent.MemberBanAdd:
-					await Necrology.guildBanAdd(session);
+					await NecrologyController.guildBanAdd(session);
 					break;
 			}
 		});

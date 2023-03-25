@@ -1,6 +1,6 @@
 import { EmbedBuilder } from 'discord.js';
 
-export class Necrology {
+export class NecrologyView {
 
 	static getMuteEmbed () {
 		let embed = new EmbedBuilder()
