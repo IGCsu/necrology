@@ -1,4 +1,3 @@
-import { DB } from '../../libs/DB.js';
 import { BaseModel } from './BaseModel.js';
 
 export class Action extends BaseModel {
@@ -17,8 +16,23 @@ export class Action extends BaseModel {
 	};
 
 	/**
+	 * Список полей-индексов для поиска в кеше.
+	 * Используются для формирования ключей поиска в кеше.
+	 * Должен идти от самого сложного условия до самого простого.
+	 * @type {[string[],string[],[string]]}
+	 */
+	static cacheKeys = [
+		['targetId', 'guildId', 'type'], // Ключ поиска последнего действия по юзеру в гильдии и типу действия
+		['targetId', 'guildId'], // Ключ поиска последнего действия по юзеру в гильдии
+		['targetId'], // Ключ поиска последнего действия по юзеру
+
+		['id', 'guildId'], // Ключ поиска действия в гильдии
+		['id'] // Ключ поиска действия
+	];
+
+	/**
 	 * Кеш моделей
-	 * @type {Object.<number, Action>}
+	 * @type {Object.<string, Action>}
 	 */
 	static actions = {};
 
@@ -93,17 +107,66 @@ export class Action extends BaseModel {
 	}
 
 	/**
-	 * @param id ID варна
-	 * @return {Action}
+	 * @param {number} id ID варна
+	 * @param {string} [guildId] ID гильдии
+	 * @return {Action|undefined}
 	 */
-	static getById (id) {
-		if (this.actions[id]) {
-			return this.actions[id];
+	static getById (id, guildId) {
+		let where = {
+			id: id
+		};
+
+		if (guildId) {
+			where.guildId = guildId;
 		}
 
-		const action = DB.query('SELECT * FROM ' + this.TABLE_NAME + ' WHERE id = ? LIMIT 1', [id]);
+		return this.getBy(where);
+	}
 
-		return action[0] ? this.actions[id] = new this(action[0], true) : undefined;
+	/**
+	 * @param {string} targetId
+	 * @param {string} [guildId]
+	 * @param {number} [type] Action.types
+	 * @return {Action|undefined}
+	 */
+	static getLastByUser (targetId, guildId, type) {
+		let where = {
+			targetId: targetId
+		};
+
+		if (guildId) {
+			where.guildId = guildId;
+		}
+
+		if (type) {
+			where.type = type;
+		}
+
+		return this.getBy(where);
+	}
+
+	/**
+	 * Получить модель по условию
+	 * @param {Object} where
+	 * @return {Action|undefined}
+	 */
+	static getBy (where) {
+		let action = this.getFromCache(where);
+
+		if (action) {
+			return action;
+		}
+
+		action = this.selectQuery(where);
+
+		if (!action) {
+			return undefined;
+		}
+
+		action = new this(action, true);
+		action.saveCache();
+
+		return action;
 	}
 
 	/**
@@ -130,8 +193,9 @@ export class Action extends BaseModel {
 
 		const action = new this(data);
 		action.save();
+		action.saveCache();
 
-		return this.actions[action.id] = action;
+		return action;
 	}
 
 	/**
@@ -151,6 +215,59 @@ export class Action extends BaseModel {
 			reason: s.entry.reason,
 			timestamp: s.timestamp.getTime()
 		});
+	}
+
+	/**
+	 * Сохраняет модель в кеше
+	 * @return {Action}
+	 */
+	saveCache () {
+		for (const keys of this.constructor.cacheKeys) {
+			let cacheKey = '';
+
+			for (const field of keys) {
+				cacheKey += ':' + field + ':' + this[field] + ':';
+			}
+
+			this.constructor.actions[cacheKey] = this;
+		}
+
+		return this;
+	}
+
+	/**
+	 * Принимает объект условий, по которому необходимо получить объект
+	 * @param {Object} where
+	 * @return {Action|undefined}
+	 */
+	static getFromCache (where) {
+		const whereFields = Object.keys(where);
+
+		// Проверяем 2 массива на идентичность, находим индекс ключ кеша именно с теми полями, которые переданы
+		const fields = this.cacheKeys.find(fields => {
+			if (fields.length !== whereFields.length) {
+				return false;
+			}
+
+			for (const field of fields) {
+				if (whereFields.indexOf(field) === -1) {
+					return false;
+				}
+			}
+
+			return true;
+		});
+
+		if (!fields) {
+			return undefined;
+		}
+
+		let cacheKey = '';
+		for (const field of fields) {
+			cacheKey += ':' + field + ':' + where[field] + ':';
+		}
+
+		return this.actions[cacheKey];
 	}
 
 }

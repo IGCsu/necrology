@@ -52,17 +52,22 @@ export class NecrologyController {
 		s.message = await s.channel.send(NecrologyView.mute(s));
 		s.thread = await s.message.startThread({ name: threadName });
 
-		const action = Action.createFromEntrySession(Action.TYPE_MUTE, s);
-
-		console.log(action);
+		Action.createFromEntrySession(Action.TYPE_MUTE, s);
 	}
 
 	/**
 	 *
-	 * @param {GuildAuditLogsEntry} entry
+	 * @param {EntrySession} s
 	 */
-	static async unmute (entry) {
+	static async unmute (s) {
+		const action = Action.getLastByUser(s.entry.targetId, s.guild.id, Action.TYPE_MUTE);
 
+		if (!action) {
+			s.logger.warn('Not found mute action', [s.entry.targetId, s.guild.id]);
+			return;
+		}
+
+		// @TODO: unmute()
 	}
 
 	/**
