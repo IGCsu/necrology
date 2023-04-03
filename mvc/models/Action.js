@@ -229,7 +229,9 @@ export class Action extends BaseModel {
 				cacheKey += ':' + field + ':' + this[field] + ':';
 			}
 
-			this.constructor.actions[cacheKey] = this;
+			if (!this.constructor.actions[cacheKey] || this.id > this.constructor.actions[cacheKey].id) {
+				this.constructor.actions[cacheKey] = this;
+			}
 		}
 
 		return this;
