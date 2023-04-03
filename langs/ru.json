@@ -1,3 +1,11 @@
 {
-  "lang": "ru"
+  "lang": "ru",
+  "Timeout for": "Мут на",
+  "canceled": "отменён",
+  "Target member": "Пользователь",
+  "Executor member": "Инициатор",
+  "Reason": "Причина",
+  "no reason": "не указана",
+  "Timeout ends": "Размут",
+  "Timeout canceled": "Мут отменён"
 }

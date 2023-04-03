@@ -79,7 +79,7 @@ export class Lang {
 	 * @returns {string}
 	 */
 	str (code) {
-		return this.data[code] ?? super.list[super.DEFAULT_LANG][code] ?? code;
+		return this.data[code] ?? this.constructor.list[this.constructor.DEFAULT_LANG][code] ?? code;
 	}
 
 }

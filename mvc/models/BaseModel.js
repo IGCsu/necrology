@@ -119,6 +119,10 @@ export class BaseModel {
 		sql += ' FROM ' + this.TABLE_NAME;
 		sql += ' WHERE ' + whereRaw.join(' AND ');
 
+		if (!order) {
+			order = [];
+		}
+
 		sql += ' ORDER BY ' + (order[0] ?? this.PRIMARY_KEY);
 		sql += ' ' + (order[1] ? 'ASC' : 'DESC');
 

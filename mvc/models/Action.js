@@ -41,13 +41,15 @@ export class Action extends BaseModel {
 	static TYPE_UNMUTE = 2;
 	static TYPE_BAN = 3;
 	static TYPE_UNBAN = 4;
+	static TYPE_KICK = 5;
 
 	static types = [
 		this.TYPE_WARN,
 		this.TYPE_MUTE,
 		this.TYPE_UNMUTE,
 		this.TYPE_BAN,
-		this.TYPE_UNBAN
+		this.TYPE_UNBAN,
+		this.TYPE_KICK
 	];
 
 	/**
@@ -84,6 +86,12 @@ export class Action extends BaseModel {
 	reason;
 
 	/**
+	 * ID действия-родителя
+	 * @type {string}
+	 */
+	parentId;
+
+	/**
 	 * Временная метка события
 	 * @type {number}
 	 */
@@ -103,6 +111,7 @@ export class Action extends BaseModel {
 		if (data.messageId) this.messageId = data.messageId;
 		if (data.threadId) this.threadId = data.threadId;
 		if (data.reason) this.reason = data.reason;
+		if (data.parentId) this.parentId = data.parentId;
 		if (data.timestamp) this.timestamp = data.timestamp;
 	}
 
@@ -172,14 +181,15 @@ export class Action extends BaseModel {
 	/**
 	 * Создаёт модель конфигурации сообщества
 	 * @param {Object} data
-	 * @param {number} data.type;
-	 * @param {string} data.guildId;
-	 * @param {string} data.targetId;
-	 * @param {string} data.executorId;
-	 * @param {string} data.messageId;
-	 * @param {string} data.threadId;
-	 * @param {string} data.reason;
-	 * @param {number} [data.timestamp];
+	 * @param {number} data.type
+	 * @param {string} data.guildId
+	 * @param {string} data.targetId
+	 * @param {string} data.executorId
+	 * @param {string} data.messageId
+	 * @param {string} data.threadId
+	 * @param {string} data.reason
+	 * @param {string} [data.parentId]
+	 * @param {number} [data.timestamp]
 	 * @return {Action}
 	 */
 	static create (data) {
@@ -202,18 +212,20 @@ export class Action extends BaseModel {
 	 * Создаёт модель из EntrySession
 	 * @param {number} type
 	 * @param {EntrySession} s
+	 * @param {Action} [action]
 	 * @return {Action}
 	 */
-	static createFromEntrySession (type, s) {
+	static createFromEntrySession (type, s, action) {
 		return this.create({
-			type: type,
-			guildId: s.guild.id,
-			targetId: s.targetMember.id,
-			executorId: s.executorMember.id,
-			messageId: s.message.id,
-			threadId: s.thread.id,
-			reason: s.entry.reason,
-			timestamp: s.timestamp.getTime()
+			type: type ?? action?.type,
+			guildId: s.guild?.id ?? action?.guildId,
+			targetId: s.targetMember?.id ?? action?.targetId,
+			executorId: s.executorMember?.id ?? action?.executorId,
+			messageId: s.message?.id ?? action?.messageId,
+			threadId: s.thread?.id ?? action?.threadId,
+			reason: s.entry?.reason ?? action?.reason,
+			timestamp: s.timestamp.getTime() ?? action?.timestamp,
+			parentId: action?.id
 		});
 	}
 

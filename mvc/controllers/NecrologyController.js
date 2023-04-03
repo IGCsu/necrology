@@ -62,12 +62,23 @@ export class NecrologyController {
 	static async unmute (s) {
 		const action = Action.getLastByUser(s.entry.targetId, s.guild.id, Action.TYPE_MUTE);
 
+		s.diffTime = this.getTimeDiff(s.oldTimeout, action.timestamp);
+
 		if (!action) {
 			s.logger.warn('Not found mute action', [s.entry.targetId, s.guild.id]);
 			return;
 		}
 
-		// @TODO: unmute()
+		s.message = await s.channel.messages.fetch(action.messageId);
+
+		if (!s.message) {
+			s.logger.warn('Mute message not found', action);
+			return;
+		}
+
+		await s.message.edit(NecrologyView.unmute(s, action));
+
+		Action.createFromEntrySession(Action.TYPE_UNMUTE, s, action);
 	}
 
 	/**
@@ -80,26 +91,30 @@ export class NecrologyController {
 
 	/**
 	 * Возвращает время мута
-	 * @param {Date} timestamp
-	 * @param {Date} [now]
+	 * @param {Date|number} timestamp
+	 * @param {Date|number} [now]
 	 * @returns {string}
 	 */
 	static getTimeDiff (timestamp, now) {
-		if (!now) now = new Date();
+		if (!now) {
+			now = new Date();
+		}
 
-		const difference = Math.floor((timestamp.getTime() - now.getTime()) / 1000);
+		const difference = Math.round((timestamp - now) / 1000);
 
-		const minutes = Math.floor((difference / 60) % 60);
-		const hours = Math.floor((difference / 3600) % 24);
-		const days = Math.floor(difference / 86400);
+		const seconds = Math.round(difference % 60);
+		const minutes = Math.round((difference / 60) % 60);
+		const hours = Math.round((difference / 3600) % 24);
+		const days = Math.round(difference / 86400);
 
 		let text = '';
 
 		if (days > 0) text += days + 'd ';
 		if (hours > 0) text += hours + 'h ';
 		if (minutes > 0) text += minutes + 'm ';
+		if (seconds > 0) text += seconds + 's ';
 
-		return difference >= 60 ? text : difference + 's';
+		return text;
 	}
 
 }

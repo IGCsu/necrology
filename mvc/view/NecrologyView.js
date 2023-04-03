@@ -1,34 +1,101 @@
 import { EmbedBuilder } from 'discord.js';
+import { Action } from '../models/Action.js';
+import { Utils } from '../../libs/Utils.js';
 
 export class NecrologyView {
+
+	static COLOR_WARN = 0;
+	static COLOR_MUTE = 2075752;
+	static COLOR_UNMUTE = 5131854;
+	static COLOR_BAN = 3;
+	static COLOR_UNBAN = 4;
+	static COLOR_KICK = 4;
+
+	static colors = [
+		this.COLOR_WARN,
+		this.COLOR_MUTE,
+		this.COLOR_UNMUTE,
+		this.COLOR_BAN,
+		this.COLOR_UNBAN,
+		this.COLOR_KICK
+	];
 
 	/**
 	 *
 	 * @param {EntrySession} s
-	 * @param {boolean} [isUnmute=false]
 	 * @return {{embeds: EmbedBuilder[]}}
 	 */
-	static mute (s, isUnmute) {
-		let embed = new EmbedBuilder()
-			.setTitle('Выдан мут ' + s.time)
-			.setColor(2075752)
-			.setTimestamp()
-			.setDescription(isUnmute ? 'mute' : 'unmute');
-
-		// TODO: Допилить мессадж мута и анмута
-
+	static mute (s) {
 		return {
-			embeds: [embed]
+			embeds: [
+				this.getPrimaryEmbed(s, Action.TYPE_MUTE, s.timestamp, s.newTimeout, s.entry?.reason)
+			]
+		};
+	}
+
+	/**
+	 * @param {EntrySession} s
+	 * @param {Action} parentAction
+	 * @return {{embeds: EmbedBuilder[]}}
+	 */
+	static unmute (s, parentAction) {
+		return {
+			embeds: [
+				this.getPrimaryEmbed(s, Action.TYPE_UNMUTE, parentAction.timestamp, s.timestamp, parentAction.reason),
+				this.getSecondaryEmbed(s, Action.TYPE_UNMUTE)
+			]
 		};
 	}
 
 	/**
 	 *
 	 * @param {EntrySession} s
-	 * @return {{embeds: EmbedBuilder[]}}
+	 * @param {number} type
+	 * @param {number} startTimestamp
+	 * @param {number} endTimestamp
+	 * @param {string} [reason]
+	 * @return {EmbedBuilder}
 	 */
-	static unmute (s) {
-		this.mute(s, true);
+	static getPrimaryEmbed (s, type, startTimestamp, endTimestamp, reason) {
+		let title = s.lang.str('Timeout for') + ' ' + s.diffTime;
+		if (type === Action.TYPE_UNBAN || type === Action.TYPE_UNMUTE) {
+			title += '(' + s.lang.str('canceled') + ')';
+		}
+
+		let description = s.lang.str('Target member') + ': <@' + s.targetMember.id + '>\n';
+		description += s.lang.str('Executor member') + ': <@' + s.executorMember.id + '>\n';
+		description += s.lang.str('Timeout ends') + ' <t:' + Math.floor(endTimestamp / 1000) + ':R>\n';
+		description += s.lang.str('Reason') + ': ' + (reason ?? s.lang.str('no reason'));
+
+		return new EmbedBuilder()
+			.setTitle(title)
+			.setColor(this.colors[type])
+			.setTimestamp(startTimestamp)
+			.setDescription(description)
+			.setThumbnail(s.targetMember.displayAvatarURL({ dynamic: true }))
+			.setFooter({
+				iconURL: s.executorMember.displayAvatarURL({ dynamic: true }),
+				text: Utils.member2name(s.executorMember)
+			});
+	}
+
+	/**
+	 * @param {EntrySession} s
+	 * @param {number} type
+	 * @return {EmbedBuilder}
+	 */
+	static getSecondaryEmbed (s, type) {
+		let description = s.lang.str('Timeout canceled') + '\n';
+		description += s.lang.str('Executor member') + ': <@' + s.executorMember.id + '>\n';
+
+		return new EmbedBuilder()
+			.setColor(this.colors[type])
+			.setTimestamp()
+			.setDescription(description)
+			.setFooter({
+				iconURL: s.executorMember.displayAvatarURL({ dynamic: true }),
+				text: Utils.member2name(s.executorMember)
+			});
 	}
 
 }
