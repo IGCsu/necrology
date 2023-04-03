@@ -12,6 +12,7 @@ export class Action extends BaseModel {
 		messageId: 'string',
 		threadId: 'string',
 		reason: 'string',
+		parentId: 'number',
 		timestamp: 'number'
 	};
 
