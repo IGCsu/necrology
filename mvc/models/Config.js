@@ -1,4 +1,3 @@
-import { DB } from '../../libs/DB.js';
 import { Lang } from './Lang.js';
 import { BaseModel } from './BaseModel.js';
 
@@ -60,9 +59,9 @@ export class Config extends BaseModel {
 			return this.configs[guildId];
 		}
 
-		const config = DB.query('SELECT * FROM ' + this.TABLE_NAME + ' WHERE guildId = ? LIMIT 1', [guildId]);
+		const config = this.selectQuery({ guildId: guildId });
 
-		return config[0] ? this.configs[guildId] = new this(config[0], true) : undefined;
+		return config ? this.configs[guildId] = new this(config, true) : undefined;
 	}
 
 	/**
