@@ -46,7 +46,7 @@ export class Commands {
 	 */
 	static init (client) {
 		for (const name in this.list) {
-			client.application.commands.create(this.get(name), '921532106914537502')
+			client.application.commands.create(this.get(name))
 				.then(() => Logger.info('Command "' + name + '" registered'));
 		}
 	}
