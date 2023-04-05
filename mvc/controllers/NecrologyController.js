@@ -46,7 +46,8 @@ export class NecrologyController {
 	static async mute (s) {
 		s.diffTime = this.getTimeDiff(s.newTimeout, s.timestamp);
 
-		const threadName = s.timestamp.toJSON() + ' ' + s.diffTime + ' ' + Utils.member2name(s.targetMember, true, true);
+		const threadName = s.timestamp.toJSON() + ' ' + s.diffTime + ' ' +
+			Utils.member2name(s.targetMember, true, true);
 
 		s.message = await s.channel.send(NecrologyView.mute(s));
 		s.thread = await s.message.startThread({ name: threadName });
@@ -59,7 +60,11 @@ export class NecrologyController {
 	 * @param {EntrySession} s
 	 */
 	static async unmute (s) {
-		const action = Action.getLastByUser(s.entry.targetId, s.guild.id, Action.TYPE_MUTE);
+		const action = Action.getLastByUser(
+			s.entry.targetId,
+			s.guild.id,
+			Action.TYPE_MUTE
+		);
 
 		s.diffTime = this.getTimeDiff(s.oldTimeout, action.timestamp);
 
@@ -89,7 +94,8 @@ export class NecrologyController {
 			return;
 		}
 
-		const threadName = s.timestamp.toJSON() + ' BAN ' + Utils.member2name(s.targetMember, true, true);
+		const threadName = s.timestamp.toJSON() + ' BAN ' +
+			Utils.member2name(s.targetMember, true, true);
 
 		s.message = await s.channel.send(NecrologyView.ban(s));
 		s.thread = await s.message.startThread({ name: threadName });

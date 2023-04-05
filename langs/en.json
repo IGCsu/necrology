@@ -1,12 +1,12 @@
 {
-  "lang": "en",
-  "Timeout": "Timeout",
-  "Timeout for": "Timeout for",
-  "canceled": "canceled",
-  "Target member": "Target user",
-  "Executor member": "Executor member",
-  "Reason": "Reason",
-  "no reason": "no reason",
-  "Timeout ends": "Timeout ends",
-  "Ban": "Ban"
+	"lang" : "en",
+	"Timeout" : "Timeout",
+	"Timeout for" : "Timeout for",
+	"canceled" : "canceled",
+	"Target member" : "Target user",
+	"Executor member" : "Executor member",
+	"Reason" : "Reason",
+	"no reason" : "no reason",
+	"Timeout ends" : "Timeout ends",
+	"Ban" : "Ban"
 }

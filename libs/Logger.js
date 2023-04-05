@@ -92,7 +92,10 @@ export class Logger {
 		data = data ? '\n' + JSON.stringify(data) : '';
 		guildId = guildId ? ' [' + guildId + ']' : '';
 
-		console.log(this.c.RESET + this.getCurrentTimestamp() + guildId + ' ' + color + str + data + this.c.RESET);
+		console.log(
+			this.c.RESET + this.getCurrentTimestamp() + guildId + ' ' + color + str +
+			data + this.c.RESET
+		);
 	}
 
 	/**

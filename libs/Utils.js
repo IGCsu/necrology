@@ -6,7 +6,8 @@ export class Utils {
 	 * Формирует имя участника гильдии
 	 *
 	 * @param {GuildMember} member
-	 * @param {boolean} [discriminator=false] Если true - добавляет к нику дискриминатор
+	 * @param {boolean} [discriminator=false] Если true - добавляет к нику
+	 *   дискриминатор
 	 * @param {boolean} [id=false] Если true - добавляет к результату ID
 	 * @return {string} Имя участника
 	 */

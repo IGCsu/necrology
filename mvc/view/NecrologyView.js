@@ -28,7 +28,13 @@ export class NecrologyView {
 	static mute (s) {
 		return {
 			embeds: [
-				this.getPrimaryEmbed(s, Action.TYPE_MUTE, s.timestamp, s.newTimeout, s.entry?.reason)
+				this.getPrimaryEmbed(
+					s,
+					Action.TYPE_MUTE,
+					s.timestamp,
+					s.newTimeout,
+					s.entry?.reason
+				)
 			]
 		};
 	}
@@ -41,7 +47,13 @@ export class NecrologyView {
 	static unmute (s, parentAction) {
 		return {
 			embeds: [
-				this.getPrimaryEmbed(s, Action.TYPE_UNMUTE, parentAction.timestamp, s.timestamp, parentAction.reason),
+				this.getPrimaryEmbed(
+					s,
+					Action.TYPE_UNMUTE,
+					parentAction.timestamp,
+					s.timestamp,
+					parentAction.reason
+				),
 				this.getSecondaryEmbed(s, Action.TYPE_UNMUTE)
 			]
 		};
@@ -84,14 +96,18 @@ export class NecrologyView {
 			title += '(' + s.lang.str('canceled') + ')';
 		}
 
-		description = s.lang.str('Target member') + ': <@' + s.targetMember.id + '>\n';
-		description += s.lang.str('Executor member') + ': <@' + s.executorMember.id + '>\n';
+		description = s.lang.str('Target member') +
+			': <@' + s.targetMember.id + '>\n';
+		description += s.lang.str('Executor member') +
+			': <@' + s.executorMember.id + '>\n';
 
 		if (type === Action.TYPE_UNMUTE || type === Action.TYPE_MUTE) {
-			description += s.lang.str('Timeout ends') + ' <t:' + Math.floor(endTimestamp / 1000) + ':R>\n';
+			description += s.lang.str('Timeout ends') +
+				' <t:' + Math.floor(endTimestamp / 1000) + ':R>\n';
 		}
 
-		description += s.lang.str('Reason') + ': ' + (reason ?? s.lang.str('no reason'));
+		description += s.lang.str('Reason') + ': ' +
+			(reason ?? s.lang.str('no reason'));
 
 		return new EmbedBuilder()
 			.setTitle(title)
@@ -123,7 +139,8 @@ export class NecrologyView {
 		}
 
 		description += ' ' + s.lang.str('canceled') + '\n';
-		description += s.lang.str('Executor member') + ': <@' + s.executorMember.id + '>\n';
+		description += s.lang.str('Executor member') +
+			': <@' + s.executorMember.id + '>\n';
 
 		return new EmbedBuilder()
 			.setColor(this.colors[type])

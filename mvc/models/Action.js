@@ -23,12 +23,20 @@ export class Action extends BaseModel {
 	 * @type {[string[],string[],[string]]}
 	 */
 	static cacheKeys = [
-		['targetId', 'guildId', 'type'], // Ключ поиска последнего действия по юзеру в гильдии и типу действия
-		['targetId', 'guildId'], // Ключ поиска последнего действия по юзеру в гильдии
-		['targetId'], // Ключ поиска последнего действия по юзеру
+		// Ключ поиска последнего действия по юзеру в гильдии и типу действия
+		['targetId', 'guildId', 'type'],
 
-		['id', 'guildId'], // Ключ поиска действия в гильдии
-		['id'] // Ключ поиска действия
+		// Ключ поиска последнего действия по юзеру в гильдии
+		['targetId', 'guildId'],
+
+		// Ключ поиска последнего действия по юзеру
+		['targetId'],
+
+		// Ключ поиска действия в гильдии
+		['id', 'guildId'],
+
+		// Ключ поиска действия
+		['id']
 	];
 
 	/**
@@ -242,7 +250,10 @@ export class Action extends BaseModel {
 				cacheKey += ':' + field + ':' + this[field] + ':';
 			}
 
-			if (!this.constructor.actions[cacheKey] || this.id > this.constructor.actions[cacheKey].id) {
+			if (
+				!this.constructor.actions[cacheKey]
+				|| this.id > this.constructor.actions[cacheKey].id
+			) {
 				this.constructor.actions[cacheKey] = this;
 			}
 		}
@@ -258,7 +269,10 @@ export class Action extends BaseModel {
 	static getFromCache (where) {
 		const whereFields = Object.keys(where);
 
-		// Проверяем 2 массива на идентичность, находим индекс ключ кеша именно с теми полями, которые переданы
+		/**
+		 * Проверяем 2 массива на идентичность, находим индекс ключ кеша именно с
+		 * теми полями, которые переданы
+		 */
 		const fields = this.cacheKeys.find(fields => {
 			if (fields.length !== whereFields.length) {
 				return false;

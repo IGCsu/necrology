@@ -48,7 +48,8 @@ export class Lang {
 
 	/**
 	 * Возвращает модель локализацию.
-	 * Использует локальную локализацию в приоритете, если её нет - берёт глобальную
+	 * Использует локальную локализацию в приоритете, если её нет - берёт
+	 * глобальную
 	 * @param {string} langGlobal Глобальная локализация
 	 * @param {string} [langLocal] Локальная локализация
 	 * @returns {Lang}
@@ -79,7 +80,8 @@ export class Lang {
 	 * @returns {string}
 	 */
 	str (code) {
-		return this.data[code] ?? this.constructor.list[this.constructor.DEFAULT_LANG][code] ?? code;
+		return this.data[code] ??
+			this.constructor.list[this.constructor.DEFAULT_LANG][code] ?? code;
 	}
 
 }

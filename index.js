@@ -19,4 +19,5 @@ Lang.init();
 DB.init();
 Router.init(client);
 
-client.login(process.env.BOT_TOKEN).then(() => Logger.info('Bot is authorized!'));
+client.login(process.env.BOT_TOKEN)
+	.then(() => Logger.info('Bot is authorized!'));
