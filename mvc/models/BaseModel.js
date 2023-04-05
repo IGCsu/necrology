@@ -1,5 +1,4 @@
 import { DB } from '../../libs/DB.js';
-import { Logger } from '../../libs/Logger.js';
 
 export class BaseModel {
 
@@ -48,7 +47,8 @@ export class BaseModel {
 			data.push(this[PRIMARY_KEY]);
 
 			DB.query(
-				'UPDATE ' + TABLE_NAME + ' SET ' + fields.join(', ') + ' WHERE ' + PRIMARY_KEY + ' = ?',
+				'UPDATE ' + TABLE_NAME + ' SET ' + fields.join(', ') + ' WHERE ' +
+				PRIMARY_KEY + ' = ?',
 				data
 			);
 		} else {
@@ -67,17 +67,16 @@ export class BaseModel {
 				data.push(this[key]);
 			}
 
-			const sql = 'INSERT INTO ' + TABLE_NAME + ' (' + fields.join(', ') + ') VALUES (' + values.join(', ') + ')';
+			const sql = 'INSERT INTO ' + TABLE_NAME + ' (' + fields.join(', ') +
+				') VALUES (' + values.join(', ') + ')';
 
 			const result = DB.query(sql, data);
 
 			if (result.insertId) {
 				this[PRIMARY_KEY] = result.insertId;
-				this.saved = true;
-			} else {
-				Logger.error('Row not inserted', { result: result, sql: sql, data: data });
 			}
 
+			this.saved = true;
 		}
 
 		return this;
@@ -89,8 +88,9 @@ export class BaseModel {
 	 * @param {Object.<string, string|number>} where
 	 * @param {number} [limit=1]
 	 * @param {string[]|string} [select='*']
-	 * @param {(string|boolean)[]} [order=] Определяет направление сортировки [поле, направление],
-	 *  true - по убыванию (по умолчанию), false - по возрастанию
+	 * @param {(string|boolean)[]} [order=] Определяет направление сортировки
+	 *   [поле, направление], true - по убыванию (по умолчанию), false - по
+	 *   возрастанию
 	 * @return {Object|Object[]}
 	 */
 	static selectQuery (where, limit, select, order) {
