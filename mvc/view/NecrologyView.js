@@ -114,9 +114,9 @@ export class NecrologyView {
 			.setColor(this.colors[type])
 			.setTimestamp(startTimestamp)
 			.setDescription(description)
-			.setThumbnail(s.targetMember.displayAvatarURL({ dynamic: true }))
+			.setThumbnail(s.targetMember.displayAvatarURL())
 			.setFooter({
-				iconURL: s.executorMember.displayAvatarURL({ dynamic: true }),
+				iconURL: s.executorMember.displayAvatarURL(),
 				text: Utils.member2name(s.executorMember, true)
 			});
 	}
@@ -147,7 +147,7 @@ export class NecrologyView {
 			.setTimestamp()
 			.setDescription(description)
 			.setFooter({
-				iconURL: s.executorMember.displayAvatarURL({ dynamic: true }),
+				iconURL: s.executorMember.displayAvatarURL(),
 				text: Utils.member2name(s.executorMember, true)
 			});
 	}
