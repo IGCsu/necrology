@@ -1,5 +1,6 @@
 {
   "lang": "en",
+  "Timeout": "Timeout",
   "Timeout for": "Timeout for",
   "canceled": "canceled",
   "Target member": "Target user",
@@ -7,5 +8,5 @@
   "Reason": "Reason",
   "no reason": "no reason",
   "Timeout ends": "Timeout ends",
-  "Timeout canceled": "Timeout canceled"
+  "Ban": "Ban"
 }

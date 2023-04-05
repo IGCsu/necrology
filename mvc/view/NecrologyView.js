@@ -48,6 +48,18 @@ export class NecrologyView {
 	}
 
 	/**
+	 * @param {EntrySession} s
+	 * @return {{embeds: EmbedBuilder[]}}
+	 */
+	static ban (s) {
+		return {
+			embeds: [
+				this.getPrimaryEmbed(s, Action.TYPE_BAN, s.entry?.reason)
+			]
+		};
+	}
+
+	/**
 	 *
 	 * @param {EntrySession} s
 	 * @param {number} type
@@ -57,14 +69,28 @@ export class NecrologyView {
 	 * @return {EmbedBuilder}
 	 */
 	static getPrimaryEmbed (s, type, startTimestamp, endTimestamp, reason) {
-		let title = s.lang.str('Timeout for') + ' ' + s.diffTime;
+		let title;
+		let description;
+
+		if (type === Action.TYPE_UNMUTE || type === Action.TYPE_MUTE) {
+			title = s.lang.str('Timeout for') + ' ' + s.diffTime;
+		}
+
+		if (type === Action.TYPE_UNBAN || type === Action.TYPE_BAN) {
+			title = s.lang.str('Ban');
+		}
+
 		if (type === Action.TYPE_UNBAN || type === Action.TYPE_UNMUTE) {
 			title += '(' + s.lang.str('canceled') + ')';
 		}
 
-		let description = s.lang.str('Target member') + ': <@' + s.targetMember.id + '>\n';
+		description = s.lang.str('Target member') + ': <@' + s.targetMember.id + '>\n';
 		description += s.lang.str('Executor member') + ': <@' + s.executorMember.id + '>\n';
-		description += s.lang.str('Timeout ends') + ' <t:' + Math.floor(endTimestamp / 1000) + ':R>\n';
+
+		if (type === Action.TYPE_UNMUTE || type === Action.TYPE_MUTE) {
+			description += s.lang.str('Timeout ends') + ' <t:' + Math.floor(endTimestamp / 1000) + ':R>\n';
+		}
+
 		description += s.lang.str('Reason') + ': ' + (reason ?? s.lang.str('no reason'));
 
 		return new EmbedBuilder()
@@ -75,7 +101,7 @@ export class NecrologyView {
 			.setThumbnail(s.targetMember.displayAvatarURL({ dynamic: true }))
 			.setFooter({
 				iconURL: s.executorMember.displayAvatarURL({ dynamic: true }),
-				text: Utils.member2name(s.executorMember)
+				text: Utils.member2name(s.executorMember, true)
 			});
 	}
 
@@ -85,7 +111,18 @@ export class NecrologyView {
 	 * @return {EmbedBuilder}
 	 */
 	static getSecondaryEmbed (s, type) {
-		let description = s.lang.str('Timeout canceled') + '\n';
+		let description;
+
+		switch (type) {
+			case Action.TYPE_UNMUTE:
+				description = s.lang.str('Timeout');
+				break;
+			case Action.TYPE_UNBAN:
+				description = s.lang.str('Ban');
+				break;
+		}
+
+		description += ' ' + s.lang.str('canceled') + '\n';
 		description += s.lang.str('Executor member') + ': <@' + s.executorMember.id + '>\n';
 
 		return new EmbedBuilder()
@@ -94,7 +131,7 @@ export class NecrologyView {
 			.setDescription(description)
 			.setFooter({
 				iconURL: s.executorMember.displayAvatarURL({ dynamic: true }),
-				text: Utils.member2name(s.executorMember)
+				text: Utils.member2name(s.executorMember, true)
 			});
 	}
 

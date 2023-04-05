@@ -1,5 +1,6 @@
 {
   "lang": "ru",
+  "Timeout": "Мут",
   "Timeout for": "Мут на",
   "canceled": "отменён",
   "Target member": "Пользователь",
@@ -7,5 +8,5 @@
   "Reason": "Причина",
   "no reason": "не указана",
   "Timeout ends": "Размут",
-  "Timeout canceled": "Мут отменён"
+  "Ban": "Бан"
 }

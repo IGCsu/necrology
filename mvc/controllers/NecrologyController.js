@@ -1,4 +1,3 @@
-import { GuildAuditLogsEntry } from 'discord.js';
 import { Action } from '../models/Action.js';
 import { Utils } from '../../libs/Utils.js';
 import { NecrologyView } from '../view/NecrologyView.js';
@@ -83,10 +82,19 @@ export class NecrologyController {
 
 	/**
 	 *
-	 * @param {GuildAuditLogsEntry} entry
+	 * @param {EntrySession} s
 	 */
-	static async guildBanAdd (entry) {
+	static async guildBanAdd (s) {
+		if (!await s.fetchData()) {
+			return;
+		}
 
+		const threadName = s.timestamp.toJSON() + ' BAN ' + Utils.member2name(s.targetMember, true, true);
+
+		s.message = await s.channel.send(NecrologyView.ban(s));
+		s.thread = await s.message.startThread({ name: threadName });
+
+		Action.createFromEntrySession(Action.TYPE_BAN, s);
 	}
 
 	/**
