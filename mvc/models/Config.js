@@ -11,7 +11,8 @@ export class Config extends BaseModel {
 	static FIELDS = {
 		guildId: 'string',
 		lang: 'string',
-		channelId: 'string'
+		channelId: 'string',
+		data: 'object'
 	};
 
 	/**
@@ -39,6 +40,12 @@ export class Config extends BaseModel {
 	channelId;
 
 	/**
+	 * Данные конфига
+	 * @type {Object}
+	 */
+	data = {};
+
+	/**
 	 * @param {Object} data
 	 * @param {boolean} [saved=false] определяет, сохранена ли модель в БД
 	 */
@@ -47,6 +54,7 @@ export class Config extends BaseModel {
 		if (data.guildId) this.guildId = data.guildId;
 		if (data.lang) this.lang = data.lang;
 		if (data.channelId) this.channelId = data.channelId;
+		if (data.data) this.data = data.data;
 	}
 
 	/**
@@ -69,6 +77,7 @@ export class Config extends BaseModel {
 	 * @param {string} data.guildId
 	 * @param {string} [data.lang]
 	 * @param {string} [data.channelId]
+	 * @param {string} [data.data]
 	 * @return {Config}
 	 */
 	static create (data) {
