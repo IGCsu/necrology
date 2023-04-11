@@ -1,4 +1,8 @@
-import { ApplicationCommand, ApplicationCommandType } from 'discord.js';
+import {
+	ApplicationCommand,
+	ApplicationCommandType,
+	PermissionsBitField
+} from 'discord.js';
 import { Lang } from '../mvc/models/Lang.js';
 
 export class Command {
@@ -36,16 +40,32 @@ export class Command {
 	type = ApplicationCommandType.ChatInput;
 
 	/**
-	 * @param {string} name
-	 * @param {function} [func]
-	 * @param {number} [type]
-	 * @param {Object.<string, string>} [desc]
+	 * Права, необходимые для доступа к команде
+	 * @type {PermissionsBitField}
 	 */
-	constructor (name, func, type, desc) {
-		this.name = name;
-		if (func) this.func = func;
-		if (type) this.type = type;
-		if (desc) this.desc = desc;
+	perm;
+
+	/**
+	 * Опции команды
+	 * @type {Object[]}
+	 */
+	options;
+
+	/**
+	 * @param {string} data.name
+	 * @param {function} [data.func]
+	 * @param {number} [data.type]
+	 * @param {PermissionsBitField} [data.perm]
+	 * @param {Object.<string, string>} [data.desc]
+	 * @param {Object[]} [data.options]
+	 */
+	constructor (data) {
+		this.name = data.name;
+		if (data.func) this.func = data.func;
+		if (data.type) this.type = data.type;
+		if (data.perm) this.perm = data.perm;
+		if (data.desc) this.desc = data.desc;
+		if (data.options) this.options = data.options;
 	}
 
 	/**
@@ -53,11 +73,14 @@ export class Command {
 	 * @param {string} name
 	 * @param {function} [func]
 	 * @param {number} [type]
-	 * @param {Object.<string, string>} [desc]
 	 * @return this
 	 */
-	static create (name, func, type, desc) {
-		return new this(name, func, type, desc);
+	static create (name, func, type) {
+		return new this({
+			name: name,
+			func: func,
+			type: type
+		});
 	}
 
 	/**
@@ -106,33 +129,52 @@ export class Command {
 		return this;
 	}
 
-	toDiscord () {
-		const description = this.desc[Lang.DEFAULT_LANG];
+	/**
+	 * @param {PermissionsBitField} perm
+	 * @return this
+	 */
+	setPerm (perm) {
+		this.perm = perm;
+		return this;
+	}
 
-		if (!description) {
+	/**
+	 * @param {PermissionsBitField} option
+	 * @return this
+	 */
+	addOption (option) {
+		this.options.push(option);
+		return this;
+	}
+
+	toDiscord () {
+		let result = {
+			name: this.name,
+			type: this.type
+		};
+
+		result.description = this.desc[Lang.DEFAULT_LANG];
+
+		if (!result.description) {
 			throw new ReferenceError(
 				'Missing description of command "' + this.name + '" in default language'
 			);
 		}
 
-		let description_localizations = {};
+		result.descriptionLocalizations = {};
 
 		for (let locale in this.desc) {
 			if (Lang.LANG_POSTFIX.hasOwnProperty(locale)) {
 				for (const postfix of Lang.LANG_POSTFIX[locale]) {
-					description_localizations[locale + '-' + postfix] = this.desc[locale];
+					result.descriptionLocalizations[locale + '-' + postfix] =
+						this.desc[locale];
 				}
 			} else {
-				description_localizations[locale] = this.desc[locale];
+				result.descriptionLocalizations[locale] = this.desc[locale];
 			}
 		}
 
-		return {
-			name: this.name,
-			type: this.type,
-			description: description,
-			description_localizations: description_localizations
-		};
+		return result;
 	}
 
 	/**

@@ -1,6 +1,8 @@
 import { Logger } from './Logger.js';
 import { HelpController } from '../mvc/controllers/HelpController.js';
+import { ConfigController } from '../mvc/controllers/ConfigController.js';
 import { Command } from './Command.js';
+import { PermissionsBitField } from 'discord.js';
 
 export class CommandRepository {
 
@@ -9,27 +11,34 @@ export class CommandRepository {
 	 * @type {Object.<string, Command>}
 	 */
 	static list = {
+
 		help: Command.create('help', HelpController.command)
 			.addDesc('en', 'Bot Information')
-			.addDesc('ru', 'Информация о боте')
+			.addDesc('ru', 'Информация о боте'),
+
+		config: Command.create('config', ConfigController.command)
+			.setPerm(PermissionsBitField.Flags.ManageGuild)
+			.addDesc('en', 'Config bot')
+			.addDesc('ru', 'Конфигурация бота')
+
 	};
 
 	/**
-	 * Возвращает команду
-	 * @param {string} name
+	 * Возвращает команду по наименованию или ID команды
+	 * @param {string} key
 	 * @return {Command}
 	 */
-	static get (name) {
-		return this.list[name];
+	static get (key) {
+		return this.list[key];
 	}
 
 	/**
-	 * Проверяет существование команды по наименованию
-	 * @param {string} name
+	 * Проверяет существование команды по наименованию или ID команды
+	 * @param {string} key
 	 * @return {boolean}
 	 */
-	static has (name) {
-		return !!this.list[name];
+	static has (key) {
+		return !!this.list[key];
 	}
 
 	/**
@@ -54,7 +63,7 @@ export class CommandRepository {
 			client.application.commands
 				.create(this.get(name).toDiscord())
 				.then(command => {
-					this.get(name).setApp(command);
+					this.list[command.id] = this.get(name).setApp(command);
 					Logger.info('Command "' + name + '" registered');
 				});
 		}
