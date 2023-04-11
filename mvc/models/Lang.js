@@ -16,10 +16,23 @@ export class Lang {
 	static DEFAULT_LANG = 'ru';
 
 	/**
+	 * В локализации Дискорда, некоторые языки имеют дополнительные коды, которые
+	 * добавляются при конвертировании
+	 * @type {Object.<string, string[]>}
+	 */
+	static LANG_POSTFIX = {
+		en: ['GB', 'US'],
+		es: ['ES'],
+		pt: ['BR'],
+		sv: ['SE'],
+		zh: ['CN', 'TW']
+	};
+
+	/**
 	 * Текущая локализация
 	 * @type {string}
 	 */
-	lang;
+	locale;
 
 	/**
 	 * Данные локализации
@@ -28,11 +41,11 @@ export class Lang {
 	data;
 
 	/**
-	 * @param {string} lang
+	 * @param {string} locale
 	 * @param {Object} data
 	 */
-	constructor (lang, data) {
-		this.lang = lang;
+	constructor (locale, data) {
+		this.locale = locale;
 		this.data = data;
 	}
 
@@ -50,24 +63,24 @@ export class Lang {
 	 * Возвращает модель локализацию.
 	 * Использует локальную локализацию в приоритете, если её нет - берёт
 	 * глобальную
-	 * @param {string} langGlobal Глобальная локализация
-	 * @param {string} [langLocal] Локальная локализация
+	 * @param {string} localeGlobal Глобальная локализация
+	 * @param {string} [localeLocal] Локальная локализация
 	 * @returns {Lang}
 	 */
-	static get (langGlobal, langLocal) {
-		let lang;
+	static get (localeGlobal, localeLocal) {
+		let locale;
 
-		if (langLocal) {
-			lang = langLocal.substring(0, 2);
-			if (this.list[lang]) {
-				return this.list[lang];
+		if (localeLocal) {
+			locale = localeLocal.substring(0, 2);
+			if (this.list[locale]) {
+				return this.list[locale];
 			}
 		}
 
-		if (langGlobal) {
-			lang = langGlobal.substring(0, 2);
-			if (this.list[lang]) {
-				return this.list[lang];
+		if (localeGlobal) {
+			locale = localeGlobal.substring(0, 2);
+			if (this.list[locale]) {
+				return this.list[locale];
 			}
 		}
 
@@ -76,12 +89,12 @@ export class Lang {
 
 	/**
 	 * Возвращает локализованный текст
-	 * @param {string} code
+	 * @param {string} locale
 	 * @returns {string}
 	 */
-	str (code) {
-		return this.data[code] ??
-			this.constructor.list[this.constructor.DEFAULT_LANG][code] ?? code;
+	str (locale) {
+		return this.data[locale] ??
+			this.constructor.list[this.constructor.DEFAULT_LANG][locale] ?? locale;
 	}
 
 }

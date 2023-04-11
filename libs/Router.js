@@ -1,6 +1,6 @@
 import { AuditLogEvent, Client, Events } from 'discord.js';
 import { Logger } from './Logger.js';
-import { Commands } from './Commands.js';
+import { CommandRepository } from './CommandRepository.js';
 import { NecrologyController } from '../mvc/controllers/NecrologyController.js';
 import { InteractionSession } from './Session/InteractionSession.js';
 import { EntrySession } from './Session/EntrySession.js';
@@ -17,13 +17,14 @@ export class Router {
 		client.on(Events.InteractionCreate, async (int) => {
 			const name = int.commandName ?? int.customId.split('|')[0];
 
-			if (!Commands.has(name)) return;
+			if (!CommandRepository.has(name)) return;
 
 			const s = InteractionSession.init(int);
 
 			s.logger.info('Start "' + name + '" command');
 
-			await Commands.get(name).func(s);
+			/** @see CommandRepository.list */
+			await CommandRepository.get(name).func(s);
 		});
 
 		client.on(Events.GuildAuditLogEntryCreate, async (entry, guild) => {
@@ -48,7 +49,7 @@ export class Router {
 	}
 
 	static ready (client) {
-		Commands.init(client);
+		CommandRepository.init(client);
 		Logger.info('Bot ready!');
 	}
 
