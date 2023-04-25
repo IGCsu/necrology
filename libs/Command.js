@@ -96,8 +96,11 @@ export class Command {
 	 * @param {Object.<string, string>} desc
 	 * @return this
 	 */
-	setDesc (desc) {
-		this.desc = desc;
+	setDescFromObject (desc) {
+		for (const key in desc) {
+			this.setDesc(key, desc[key]);
+		}
+
 		return this;
 	}
 
@@ -106,7 +109,7 @@ export class Command {
 	 * @param {string} text
 	 * @return this
 	 */
-	addDesc (locale, text) {
+	setDesc (locale, text) {
 		this.desc[locale] = text;
 		return this;
 	}
