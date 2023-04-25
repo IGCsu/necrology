@@ -85,29 +85,29 @@ export class NecrologyView {
 		let description;
 
 		if (type === Action.TYPE_UNMUTE || type === Action.TYPE_MUTE) {
-			title = s.lang.str('Timeout for') + ' ' + s.diffTime;
+			title = s._('Timeout for') + ' ' + s.diffTime;
 		}
 
 		if (type === Action.TYPE_UNBAN || type === Action.TYPE_BAN) {
-			title = s.lang.str('Ban');
+			title = s._('Ban');
 		}
 
 		if (type === Action.TYPE_UNBAN || type === Action.TYPE_UNMUTE) {
-			title += '(' + s.lang.str('canceled') + ')';
+			title += '(' + s._('canceled') + ')';
 		}
 
-		description = s.lang.str('Target member') +
+		description = s._('Target member') +
 			': <@' + s.targetMember.id + '>\n';
-		description += s.lang.str('Executor member') +
+		description += s._('Executor member') +
 			': <@' + s.executorMember.id + '>\n';
 
 		if (type === Action.TYPE_UNMUTE || type === Action.TYPE_MUTE) {
-			description += s.lang.str('Timeout ends') +
+			description += s._('Timeout ends') +
 				' <t:' + Math.floor(endTimestamp / 1000) + ':R>\n';
 		}
 
-		description += s.lang.str('Reason') + ': ' +
-			(reason ?? s.lang.str('no reason'));
+		description += s._('Reason') + ': ' +
+			(reason ?? s._('no reason'));
 
 		return new EmbedBuilder()
 			.setTitle(title)
@@ -131,15 +131,15 @@ export class NecrologyView {
 
 		switch (type) {
 			case Action.TYPE_UNMUTE:
-				description = s.lang.str('Timeout');
+				description = s._('Timeout');
 				break;
 			case Action.TYPE_UNBAN:
-				description = s.lang.str('Ban');
+				description = s._('Ban');
 				break;
 		}
 
-		description += ' ' + s.lang.str('canceled') + '\n';
-		description += s.lang.str('Executor member') +
+		description += ' ' + s._('canceled') + '\n';
+		description += s._('Executor member') +
 			': <@' + s.executorMember.id + '>\n';
 
 		return new EmbedBuilder()

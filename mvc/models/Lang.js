@@ -89,12 +89,12 @@ export class Lang {
 
 	/**
 	 * Возвращает локализованный текст
-	 * @param {string} locale
+	 * @param {string} key
 	 * @returns {string}
 	 */
-	str (locale) {
-		return this.data[locale] ??
-			this.constructor.list[this.constructor.DEFAULT_LANG][locale] ?? locale;
+	str (key) {
+		return this.data[key] ??
+			this.constructor.list[this.constructor.DEFAULT_LANG][key] ?? key;
 	}
 
 }

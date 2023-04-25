@@ -66,4 +66,14 @@ export class Session {
 		);
 	}
 
+	/**
+	 * Возвращает локализованный текст
+	 * Алиас для {@see Lang.str}
+	 * @param {string} key
+	 * @returns {string}
+	 */
+	_ (key) {
+		return this.lang.str(key);
+	}
+
 }
