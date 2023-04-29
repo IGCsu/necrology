@@ -63,7 +63,7 @@ export class CommandRepository {
 			client.application.commands
 				.create(this.get(name).toDiscord())
 				.then(command => {
-					this.list[command.id] = this.get(name).setApp(command);
+					this.get(name).setApp(command);
 					Logger.info('Command "' + name + '" registered');
 				});
 		}
