@@ -25,10 +25,10 @@ export class Command {
 	name;
 
 	/**
-	 * Описание команды на разных языках
-	 * @type {Object.<string, string>}
+	 * Ключ описания команды
+	 * @type {string}
 	 */
-	desc = {};
+	desc;
 
 	/**
 	 * Тип команды
@@ -49,14 +49,14 @@ export class Command {
 	 * Опции команды
 	 * @type {Object[]}
 	 */
-	options;
+	options = [];
 
 	/**
 	 * @param {string} data.name
 	 * @param {function} [data.func]
 	 * @param {number} [data.type]
 	 * @param {PermissionsBitField} [data.perm]
-	 * @param {Object.<string, string>} [data.desc]
+	 * @param {string} [data.desc]
 	 * @param {Object[]} [data.options]
 	 */
 	constructor (data) {
@@ -93,24 +93,11 @@ export class Command {
 	}
 
 	/**
-	 * @param {Object.<string, string>} desc
+	 * @param {string} desc
 	 * @return this
 	 */
-	setDescFromObject (desc) {
-		for (const key in desc) {
-			this.setDesc(key, desc[key]);
-		}
-
-		return this;
-	}
-
-	/**
-	 * @param {string} locale
-	 * @param {string} text
-	 * @return this
-	 */
-	setDesc (locale, text) {
-		this.desc[locale] = text;
+	setDesc (desc) {
+		this.desc = desc;
 		return this;
 	}
 
@@ -142,7 +129,7 @@ export class Command {
 	}
 
 	/**
-	 * @param {PermissionsBitField} option
+	 * @param {Object} option
 	 * @return this
 	 */
 	addOption (option) {
@@ -150,13 +137,26 @@ export class Command {
 		return this;
 	}
 
+	/**
+	 * @param {Object[]} options
+	 * @return this
+	 */
+	addOptions (options) {
+		for (const option of options) {
+			this.addOption(option);
+		}
+
+		return this;
+	}
+
 	toDiscord () {
 		let result = {
 			name: this.name,
-			type: this.type
+			type: this.type,
+			options: this.options
 		};
 
-		result.description = this.desc[Lang.DEFAULT_LANG];
+		result.description = Lang.getText(this.desc);
 
 		if (!result.description) {
 			throw new ReferenceError(
@@ -164,18 +164,7 @@ export class Command {
 			);
 		}
 
-		result.descriptionLocalizations = {};
-
-		for (let locale in this.desc) {
-			if (Lang.LANG_POSTFIX.hasOwnProperty(locale)) {
-				for (const postfix of Lang.LANG_POSTFIX[locale]) {
-					result.descriptionLocalizations[locale + '-' + postfix] =
-						this.desc[locale];
-				}
-			} else {
-				result.descriptionLocalizations[locale] = this.desc[locale];
-			}
-		}
+		result.descriptionLocalizations = Lang.toDiscord(this.desc);
 
 		return result;
 	}
@@ -187,7 +176,8 @@ export class Command {
 	toString (locale) {
 		if (!locale) locale = Lang.DEFAULT_LANG;
 
-		return '</' + this.name + ':' + this.app.id + '> - ' + this.desc[locale];
+		return '</' + this.name + ':' + this.app.id + '> - ' +
+			Lang.getText(this.desc, locale);
 	}
 
 }

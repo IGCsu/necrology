@@ -13,13 +13,12 @@ export class CommandRepository {
 	static list = {
 
 		help: Command.create('help', HelpController.command)
-			.setDesc('en', 'Bot Information')
-			.setDesc('ru', 'Информация о боте'),
+			.setDesc('Help title'),
 
 		config: Command.create('config', ConfigController.command)
 			.setPerm(PermissionsBitField.Flags.ManageGuild)
-			.setDesc('en', 'Config bot')
-			.setDesc('ru', 'Конфигурация бота')
+			.setDesc('Config title')
+			.addOptions(ConfigController.getCommandOptions())
 
 	};
 

@@ -6,6 +6,8 @@ export class BaseModel {
 	static PRIMARY_KEY;
 	static FIELDS = {};
 
+	#primitiveTypes = ['string', 'number', 'boolean'];
+
 	/**
 	 * Если true - значит модель есть в БД.
 	 * Если false - значит модель существует только в кеше
@@ -41,10 +43,10 @@ export class BaseModel {
 				}
 
 				fields.push(key + ' = ?');
-				data.push(this[key]);
+				data.push(this.#prepareValue(this[key]));
 			}
 
-			data.push(this[PRIMARY_KEY]);
+			data.push(this.#prepareValue(this[PRIMARY_KEY]));
 
 			DB.query(
 				'UPDATE ' + TABLE_NAME + ' SET ' + fields.join(', ') + ' WHERE ' +
@@ -64,7 +66,7 @@ export class BaseModel {
 
 				fields.push(key);
 				values.push('?');
-				data.push(this[key]);
+				data.push(this.#prepareValue(this[key]));
 			}
 
 			const sql = 'INSERT INTO ' + TABLE_NAME + ' (' + fields.join(', ') +
@@ -133,6 +135,14 @@ export class BaseModel {
 		if (result[0]) {
 			return limit === 1 ? result[0] : result;
 		}
+	}
+
+	#prepareValue (value) {
+		if (!this.#primitiveTypes.includes(typeof value)) {
+			value = JSON.stringify(value);
+		}
+
+		return value;
 	}
 
 }

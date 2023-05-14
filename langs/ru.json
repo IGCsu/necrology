@@ -9,7 +9,12 @@
 	"no reason" : "не указана",
 	"Timeout ends" : "Размут",
 	"Ban" : "Бан",
-	"Help title" : "О боте",
+	"Help title" : "Информация о боте",
 	"Help desc" : "Бот логирования действий модерации. Отправляет в выбранный чат информацию о мутах, банах и тп",
-	"Help commands" : "Команды бота"
+	"Help commands" : "Команды бота",
+	"Config title" : "Настройки бота",
+	"Config key" : "Ключ настройки",
+	"Config value" : "Значение настройки",
+	"Config lang name" : "Язык бота",
+	"Config channelId name" : "ID чата логгирования"
 }

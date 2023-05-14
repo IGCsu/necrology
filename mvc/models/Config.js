@@ -1,5 +1,6 @@
 import { Lang } from './Lang.js';
 import { BaseModel } from './BaseModel.js';
+import { ConfigElement } from '../../libs/ConfigElement.js';
 
 /**
  * Конфигурация бота для сообщества
@@ -13,6 +14,22 @@ export class Config extends BaseModel {
 		lang: 'string',
 		channelId: 'string',
 		data: 'object'
+	};
+
+	/**
+	 * Список настроек бота
+	 * @type {Object.<string, ConfigElement>}
+	 */
+	static elements = {
+
+		lang: ConfigElement.create('lang')
+			.setDesc('Config lang desc')
+			.setName('Config lang name'),
+
+		channelId: ConfigElement.create('channelId')
+			.setDesc('Config channelId desc')
+			.setName('Config channelId name')
+
 	};
 
 	/**
@@ -55,6 +72,8 @@ export class Config extends BaseModel {
 		if (data.lang) this.lang = data.lang;
 		if (data.channelId) this.channelId = data.channelId;
 		if (data.data) this.data = data.data;
+
+		if (typeof this.data != 'object') this.data = JSON.parse(this.data);
 	}
 
 	/**
@@ -102,6 +121,15 @@ export class Config extends BaseModel {
 	 */
 	static getOrCreate (guildId) {
 		return this.get(guildId) ?? this.create({ guildId: guildId });
+	}
+
+	/**
+	 * Возвращает элемент конфигурации
+	 * @param {string} key
+	 * @return {ConfigElement}
+	 */
+	static getElement (key) {
+		return this.elements[key];
 	}
 
 }

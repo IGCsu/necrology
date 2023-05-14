@@ -7,7 +7,10 @@ export class Lang {
 	 * Кеш моделей
 	 * @type {Object.<string, Lang>}
 	 */
-	static list = {};
+	static list = {
+		ru: new this('ru', ruLang),
+		en: new this('en', enLang)
+	};
 
 	/**
 	 * Локализация по умолчанию
@@ -30,7 +33,7 @@ export class Lang {
 
 	/**
 	 * Текущая локализация
-	 * @type {string}
+	 * @type {string} Код локализации ISO 639-1
 	 */
 	locale;
 
@@ -41,7 +44,7 @@ export class Lang {
 	data;
 
 	/**
-	 * @param {string} locale
+	 * @param {string} locale Код локализации ISO 639-1
 	 * @param {Object} data
 	 */
 	constructor (locale, data) {
@@ -50,21 +53,11 @@ export class Lang {
 	}
 
 	/**
-	 * Инициализирует модели локализаций
-	 */
-	static init () {
-		this.list = {
-			ru: new this('ru', ruLang),
-			en: new this('en', enLang)
-		};
-	}
-
-	/**
 	 * Возвращает модель локализацию.
 	 * Использует локальную локализацию в приоритете, если её нет - берёт
 	 * глобальную
-	 * @param {string} localeGlobal Глобальная локализация
-	 * @param {string} [localeLocal] Локальная локализация
+	 * @param {string} localeGlobal Глобальная локализация в ISO 639-1
+	 * @param {string} [localeLocal] Локальная локализация в ISO 639-1
 	 * @returns {Lang}
 	 */
 	static get (localeGlobal, localeLocal) {
@@ -85,6 +78,46 @@ export class Lang {
 		}
 
 		return this.list[this.DEFAULT_LANG];
+	}
+
+	/**
+	 * Возвращает текст по локализации
+	 * @param {string} key Ключ текста
+	 * @param {string} [locale=Lang.DEFAULT_LANG] Код локализации ISO 639-1
+	 * @return {string}
+	 */
+	static getText (key, locale) {
+		if (!locale) {
+			locale = this.DEFAULT_LANG;
+		}
+
+		if (typeof locale !== 'string' || locale.length !== 2) {
+			throw new TypeError('Locale "' + locale + '" invalid');
+		}
+
+		return this.get(locale).str(key);
+	}
+
+	/**
+	 * Формирует объект локализированных текстов для Дискорда
+	 * @param {string} key Ключ текста
+	 * @return {Object.<string, string>}
+	 */
+	static toDiscord (key) {
+		let result = {};
+
+		for (let locale in this.list) {
+			if (Lang.LANG_POSTFIX.hasOwnProperty(locale)) {
+				const text = this.getText(key, locale);
+				for (const postfix of Lang.LANG_POSTFIX[locale]) {
+					result[locale + '-' + postfix] = text;
+				}
+			} else {
+				result[locale] = this.getText(key, locale);
+			}
+		}
+
+		return result;
 	}
 
 	/**
