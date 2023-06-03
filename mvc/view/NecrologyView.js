@@ -1,12 +1,13 @@
 import { EmbedBuilder } from 'discord.js';
 import { Action } from '../models/Action.js';
 import { Utils } from '../../libs/Utils.js';
+import { Const } from '../../libs/Const.js';
 
 export class NecrologyView {
 
 	static COLOR_WARN = 0;
-	static COLOR_MUTE = 2075752;
-	static COLOR_UNMUTE = 5131854;
+	static COLOR_MUTE = Const.COLOR_GREEN;
+	static COLOR_UNMUTE = Const.COLOR_GREY;
 	static COLOR_BAN = 3;
 	static COLOR_UNBAN = 4;
 	static COLOR_KICK = 4;

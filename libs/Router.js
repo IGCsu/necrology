@@ -4,6 +4,7 @@ import { CommandRepository } from './CommandRepository.js';
 import { NecrologyController } from '../mvc/controllers/NecrologyController.js';
 import { InteractionSession } from './Session/InteractionSession.js';
 import { EntrySession } from './Session/EntrySession.js';
+import { UserError } from './Error/UserError.js';
 
 export class Router {
 
@@ -21,10 +22,21 @@ export class Router {
 
 			const s = InteractionSession.init(int);
 
-			s.logger.info('Start "' + name + '" command');
+			try {
 
-			/** @see CommandRepository.list */
-			await CommandRepository.get(name).func(s);
+				s.logger.info('Start "' + name + '" command', s.int.options.data);
+
+				/** @see CommandRepository.list */
+				await CommandRepository.get(name).func(s);
+
+			} catch (err) {
+				if (err instanceof UserError) {
+					await err.sendErrorMessage(s);
+					return;
+				}
+
+				s.logger.error(err.stack);
+			}
 		});
 
 		client.on(Events.GuildAuditLogEntryCreate, async (entry, guild) => {

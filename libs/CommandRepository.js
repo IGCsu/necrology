@@ -12,10 +12,10 @@ export class CommandRepository {
 	 */
 	static list = {
 
-		help: Command.create('help', HelpController.command)
+		help: Command.create('help', (s) => HelpController.command(s))
 			.setDesc('Help title'),
 
-		config: Command.create('config', ConfigController.command)
+		config: Command.create('config', (s) => ConfigController.command(s))
 			.setPerm(PermissionsBitField.Flags.ManageGuild)
 			.setDesc('Config title')
 			.addOptions(ConfigController.getCommandOptions())
