@@ -1,6 +1,8 @@
 import { Lang } from './Lang.js';
 import { BaseModel } from './BaseModel.js';
 import { ConfigElement } from '../../libs/ConfigElement.js';
+import { InvalidArgumentError } from '../../libs/Error/InvalidArgumentError.js';
+import { ApplicationCommandOptionType } from 'discord.js';
 
 /**
  * Конфигурация бота для сообщества
@@ -29,6 +31,13 @@ export class Config extends BaseModel {
 		channelId: ConfigElement.create('channelId')
 			.setDesc('Config channelId desc')
 			.setName('Config channelId name')
+			.setType(ApplicationCommandOptionType.Channel),
+
+		enabledThread: ConfigElement.create('enabledThread')
+			.setDesc('Config enabledThread desc')
+			.setName('Config enabledThread name')
+			.setType(ApplicationCommandOptionType.Boolean)
+			.setDeepData(true)
 
 	};
 
@@ -129,7 +138,37 @@ export class Config extends BaseModel {
 	 * @return {ConfigElement}
 	 */
 	static getElement (key) {
+		if (!this.elements[key]) {
+			throw new InvalidArgumentError('Config key not found');
+		}
+
 		return this.elements[key];
+	}
+
+	/**
+	 * Возвращает значение конфигурации
+	 * @param {string} key
+	 * @return {*}
+	 */
+	get (key) {
+		return Config.getElement(key).deepData
+			? this.data[key]
+			: this[key];
+	}
+
+	/**
+	 * Устанавливает значение конфигурации
+	 * @param {string} key
+	 * @param {string} value
+	 */
+	set (key, value) {
+		if (Config.getElement(key).deepData) {
+			this.data[key] = value;
+		} else {
+			this[key] = value;
+		}
+
+		this.save();
 	}
 
 }

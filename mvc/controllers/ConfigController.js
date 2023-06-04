@@ -2,6 +2,8 @@ import { ApplicationCommandOptionType } from 'discord.js';
 import { Lang } from '../models/Lang.js';
 import { Config } from '../models/Config.js';
 import { UserError } from '../../libs/Error/UserError.js';
+import { ConfigView } from '../view/ConfigView.js';
+import { InvalidArgumentError } from '../../libs/Error/InvalidArgumentError.js';
 
 export class ConfigController {
 
@@ -28,10 +30,16 @@ export class ConfigController {
 			throw new UserError('Key field is required!');
 		}
 
-		if (value === null) {
-			await this.actionGet(s, key);
-		} else {
-			await this.actionSet(s, key, value);
+		try {
+			if (value === null) {
+				await this.actionGet(s, key);
+			} else {
+				await this.actionSet(s, key, value);
+			}
+		} catch (err) {
+			if (err instanceof InvalidArgumentError) {
+				throw UserError(err.message);
+			}
 		}
 	}
 
@@ -40,6 +48,8 @@ export class ConfigController {
 	 */
 	static async actionIndex (s) {
 		s.logger.info('Start actionIndex');
+
+		await s.int.reply(ConfigView.index(s));
 	}
 
 	/**
@@ -47,7 +57,9 @@ export class ConfigController {
 	 * @param {string} key
 	 */
 	static async actionGet (s, key) {
-		s.logger.info('Start actionIndex', { key: key });
+		s.logger.info('Start actionGet', { key: key });
+
+		await s.int.reply(ConfigView.get(s, key));
 	}
 
 	/**
@@ -56,7 +68,17 @@ export class ConfigController {
 	 * @param {string} value
 	 */
 	static async actionSet (s, key, value) {
-		s.logger.info('Start actionIndex', { key: key, value: value });
+		s.logger.info('Start actionSet', { key: key, value: value });
+
+		await s.int.deferReply();
+
+		await this.validateValue(s, Config.getElement(key), value);
+
+		const oldValue = s.config.get(key);
+
+		s.config.set(key, value);
+
+		await s.int.reply(ConfigView.set(s, key, oldValue));
 	}
 
 	/**
@@ -92,6 +114,58 @@ export class ConfigController {
 		});
 
 		return options;
+	}
+
+	/**
+	 * @param {InteractionSession} s
+	 * @param {ConfigElement} element
+	 * @param {string} value
+	 * @return {Promise<void>}
+	 */
+	static async validateValue (s, element, value) {
+		let preparedValue;
+
+		switch (element.type) {
+			case ApplicationCommandOptionType.String:
+				preparedValue = String(value);
+				break;
+
+			case ApplicationCommandOptionType.Integer:
+			case ApplicationCommandOptionType.Number:
+				preparedValue = Number(value);
+				break;
+
+			case ApplicationCommandOptionType.Boolean:
+				preparedValue = Boolean(value);
+				break;
+
+			case ApplicationCommandOptionType.User:
+				preparedValue = await s.guild.members.fetch({ id: value });
+				if (!preparedValue) {
+					throw new UserError('User not found in guild');
+				}
+				break;
+
+			case ApplicationCommandOptionType.Channel:
+				preparedValue = await s.guild.channels.fetch({ id: value });
+
+				if (!preparedValue) {
+					throw new UserError('Channel not found in guild');
+				}
+				break;
+
+			case ApplicationCommandOptionType.Role:
+				preparedValue = await s.guild.roles.fetch({ id: value });
+
+				if (!preparedValue) {
+					throw new UserError('Role not found in guild');
+				}
+				break;
+		}
+
+		if (preparedValue === undefined || preparedValue === null) {
+			throw new UserError('Value is invalid');
+		}
 	}
 
 }
