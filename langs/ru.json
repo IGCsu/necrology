@@ -13,8 +13,9 @@
 	"Help desc" : "Бот логирования действий модерации. Отправляет в выбранный чат информацию о мутах, банах и тп",
 	"Help commands" : "Команды бота",
 	"Config title" : "Настройки бота",
-	"Config key" : "Ключ настройки",
-	"Config value" : "Значение настройки",
+	"Config key" : "Параметр конфигурации",
+	"Config value" : "Значение праметра конфигурации",
 	"Config lang name" : "Язык бота",
-	"Config channelId name" : "ID чата логгирования"
+	"Config channelId name" : "ID чата логгирования",
+	"Config enabledThread name" : "Создание веток под сообщениями бота"
 }
