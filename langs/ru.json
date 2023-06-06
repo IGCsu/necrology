@@ -14,7 +14,7 @@
 	"Help commands" : "Команды бота",
 	"Config title" : "Настройки бота",
 	"Config key" : "Параметр конфигурации",
-	"Config value" : "Значение параметра конфигурации",
+	"Config value" : "Значение параметра",
 	"Config lang name" : "Язык бота",
 	"Config channelId name" : "ID чата логгирования",
 	"Config enabledThread name" : "Создание веток под сообщениями бота"

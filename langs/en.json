@@ -13,8 +13,8 @@
 	"Help desc" : "Bot logs moderation actions. Sends information about mutes, bans, etc to the selected chat room",
 	"Help commands" : "Bot commands",
 	"Config title" : "Bot settings",
-	"Config key" : "Setting parameter",
-	"Config value" : "Setting value",
+	"Config key" : "Сonfig key",
+	"Config value" : "Сonfig value",
 	"Config lang name" : "Bot language",
 	"Config channelId name" : "Logging chat ID",
 	"Config enabledThread name" : "Creating branches under bot messages"
