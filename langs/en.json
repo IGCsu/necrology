@@ -16,6 +16,7 @@
 	"Config key" : "Сonfig key",
 	"Config value" : "Сonfig value",
 	"Config lang name" : "Bot language",
+	"Config lang desc" : "Set default language for bot messages",
 	"Config channelId name" : "Logging chat ID",
 	"Config enabledThread name" : "Creating branches under bot messages"
 }
