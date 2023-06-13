@@ -8,5 +8,15 @@
 	"Reason" : "Reason",
 	"no reason" : "no reason",
 	"Timeout ends" : "Timeout ends",
-	"Ban" : "Ban"
+	"Ban" : "Ban",
+	"Help title" : "Bot information",
+	"Help desc" : "Bot logs moderation actions. Sends information about mutes, bans, etc to the selected chat room",
+	"Help commands" : "Bot commands",
+	"Config title" : "Bot settings",
+	"Config key" : "Сonfig key",
+	"Config value" : "Сonfig value",
+	"Config lang name" : "Bot language",
+	"Config lang desc" : "Set default language for bot messages",
+	"Config channelId name" : "Logging chat ID",
+	"Config enabledThread name" : "Creating branches under bot messages"
 }
