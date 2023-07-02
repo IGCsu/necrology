@@ -1,4 +1,5 @@
 import { ApplicationCommandOptionType } from 'discord.js';
+import { UserError } from './Error/UserError.js';
 
 export class ConfigElement {
 
@@ -33,6 +34,16 @@ export class ConfigElement {
 	 * @type {boolean}
 	 */
 	deepData = false;
+
+	/**
+	 * @callback validateValueFunc
+	 * @param {*} value
+	 */
+	/**
+	 * Функция валидации
+	 * @type {Object.<string, validateValueFunc>}
+	 */
+	validateValueFuncMap = {};
 
 	/**
 	 * @param {string} data.key
@@ -96,6 +107,29 @@ export class ConfigElement {
 	setDeepData (deepData) {
 		this.deepData = deepData;
 		return this;
+	}
+
+	/**
+	 * Устанавливает колл-бек функцию валидации
+	 * @param {Object.<string, validateValueFunc>} func
+	 * @return {ConfigElement}
+	 */
+	setValidateValueFunc (func) {
+		this.validateValueFuncMap = func;
+		return this;
+	}
+
+	/**
+	 * Перебирает функции валидации и выдаёт ошибки в случае провала валидации
+	 * @param {string} value
+	 * @return {Promise<void>}
+	 */
+	async validateValue (value) {
+		for (const errorMsg in this.validateValueFuncMap) {
+			if (!this.validateValueFuncMap[errorMsg](value)) {
+				throw new UserError(errorMsg);
+			}
+		}
 	}
 
 }

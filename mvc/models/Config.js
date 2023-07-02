@@ -26,7 +26,10 @@ export class Config extends BaseModel {
 
 		lang: ConfigElement.create('lang')
 			.setDesc('Config lang desc')
-			.setName('Config lang name'),
+			.setName('Config lang name')
+			.setValidateValueFunc({
+				'The selected language is not supported': v => Lang.list[v]
+			}),
 
 		channelId: ConfigElement.create('channelId')
 			.setDesc('Config channelId desc')
@@ -146,14 +149,38 @@ export class Config extends BaseModel {
 	}
 
 	/**
+	 * Переводит значение в необходимый примитивный тип
+	 * @param {number} type
+	 * @param {*} value
+	 * @return {number|string|boolean}
+	 */
+	static prepareValue (type, value) {
+		switch (type) {
+			case ApplicationCommandOptionType.Integer:
+			case ApplicationCommandOptionType.Number:
+				return Number(value);
+
+			case ApplicationCommandOptionType.Boolean:
+				return value === '1' || value === 'true' || value === true;
+
+			case ApplicationCommandOptionType.String:
+			default:
+				return String(value);
+		}
+	}
+
+	/**
 	 * Возвращает значение конфигурации
 	 * @param {string} key
-	 * @return {*}
+	 * @return {number|string|boolean}
 	 */
 	get (key) {
-		return Config.getElement(key).deepData
+		const element = Config.getElement(key);
+		const value = element.deepData
 			? this.data[key]
 			: this[key];
+
+		return Config.prepareValue(element.type, value);
 	}
 
 	/**

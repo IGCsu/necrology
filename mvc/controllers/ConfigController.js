@@ -38,8 +38,10 @@ export class ConfigController {
 			}
 		} catch (err) {
 			if (err instanceof InvalidArgumentError) {
-				throw UserError(err.message);
+				throw UserError(err.message, { cause: err });
 			}
+
+			throw err;
 		}
 	}
 
@@ -72,13 +74,22 @@ export class ConfigController {
 
 		await s.int.deferReply();
 
-		await this.validateValue(s, Config.getElement(key), value);
+		const element = Config.getElement(key);
+
+		value = Config.prepareValue(element.type, value);
+
+		await this.validateValue(s, element, value);
 
 		const oldValue = s.config.get(key);
 
-		s.config.set(key, value);
+		if (oldValue !== value) {
+			s.config.set(key, value);
+			s.logger.info('Value changed');
+		}
 
-		await s.int.reply(ConfigView.set(s, key, oldValue));
+		await s.int.followUp(ConfigView.set(s, key, oldValue));
+
+		s.logger.info('End actionSet');
 	}
 
 	/**
@@ -120,52 +131,48 @@ export class ConfigController {
 	 * @param {InteractionSession} s
 	 * @param {ConfigElement} element
 	 * @param {string} value
-	 * @return {Promise<void>}
+	 * @return {Promise<*>}
 	 */
 	static async validateValue (s, element, value) {
 		let preparedValue;
 
 		switch (element.type) {
-			case ApplicationCommandOptionType.String:
-				preparedValue = String(value);
-				break;
-
-			case ApplicationCommandOptionType.Integer:
-			case ApplicationCommandOptionType.Number:
-				preparedValue = Number(value);
-				break;
-
-			case ApplicationCommandOptionType.Boolean:
-				preparedValue = Boolean(value);
-				break;
-
 			case ApplicationCommandOptionType.User:
-				preparedValue = await s.guild.members.fetch({ id: value });
-				if (!preparedValue) {
-					throw new UserError('User not found in guild');
+				try {
+					preparedValue = await s.guild.members.fetch({ id: value });
+				} catch (err) {
+					throw new UserError('User not found in guild', { cause: err });
 				}
 				break;
 
 			case ApplicationCommandOptionType.Channel:
-				preparedValue = await s.guild.channels.fetch({ id: value });
-
-				if (!preparedValue) {
-					throw new UserError('Channel not found in guild');
+				try {
+					preparedValue = await s.guild.channels.fetch(value);
+				} catch (err) {
+					throw new UserError('Channel not found in guild', { cause: err });
 				}
 				break;
 
 			case ApplicationCommandOptionType.Role:
-				preparedValue = await s.guild.roles.fetch({ id: value });
-
-				if (!preparedValue) {
-					throw new UserError('Role not found in guild');
+				try {
+					preparedValue = await s.guild.roles.fetch(value);
+				} catch (err) {
+					throw new UserError('Role not found in guild', { cause: err });
 				}
 				break;
+			default:
+				preparedValue = value;
 		}
 
-		if (preparedValue === undefined || preparedValue === null) {
+		if (
+			preparedValue === undefined
+			|| preparedValue === null
+			|| isNaN(preparedValue)
+		) {
 			throw new UserError('Value is invalid');
 		}
+
+		await element.validateValue(preparedValue);
 	}
 
 }

@@ -1,6 +1,5 @@
 import { Config } from '../models/Config.js';
 import { ApplicationCommandOptionType, EmbedBuilder } from 'discord.js';
-import { Utils } from '../../libs/Utils.js';
 
 export class ConfigView {
 
@@ -73,23 +72,16 @@ export class ConfigView {
 		const preparedOldValue = this.prepareValue(element, oldValue);
 		const preparedNewValue = this.prepareValue(element, s.config.get(key));
 
-		let desc = s._('Value changed');
+		let desc = s._('Value changed') + ' - ' + element.name + '\n';
 
 		desc += '\n' + s._('Old value') + ': ' + preparedOldValue;
 		desc += '\n' + s._('New value') + ': ' + preparedNewValue;
 
+		const embed = new EmbedBuilder()
+			.setDescription(desc);
+
 		return {
-			embeds: [
-				new EmbedBuilder()
-					.setTitle(s._(element.name))
-					.setDescription(desc)
-					.setTimestamp()
-					.setDescription(description)
-					.setFooter({
-						iconURL: s.executorMember.displayAvatarURL(),
-						text: Utils.member2name(s.executorMember, true)
-					})
-			]
+			embeds: [embed]
 		};
 	}
 
