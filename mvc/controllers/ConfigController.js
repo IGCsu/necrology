@@ -135,6 +135,8 @@ export class ConfigController {
 	 */
 	static async validateValue (s, element, value) {
 		let preparedValue;
+		const isNumberType = element.type === ApplicationCommandOptionType.Number
+			|| element.type === ApplicationCommandOptionType.Integer;
 
 		switch (element.type) {
 			case ApplicationCommandOptionType.User:
@@ -167,7 +169,7 @@ export class ConfigController {
 		if (
 			preparedValue === undefined
 			|| preparedValue === null
-			|| isNaN(preparedValue)
+			|| (isNumberType && isNaN(preparedValue))
 		) {
 			throw new UserError('Value is invalid');
 		}

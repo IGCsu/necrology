@@ -186,7 +186,7 @@ export class Config extends BaseModel {
 	/**
 	 * Устанавливает значение конфигурации
 	 * @param {string} key
-	 * @param {string} value
+	 * @param {number|string|boolean} value
 	 */
 	set (key, value) {
 		if (Config.getElement(key).deepData) {
