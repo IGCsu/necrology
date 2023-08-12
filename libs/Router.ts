@@ -1,9 +1,9 @@
 import { AuditLogEvent, Client, Events } from 'discord.js';
 import { Logger } from './Logger.js';
-import { CommandRepository } from './CommandRepository.js';
+import { CommandRepository } from './CommandRepository';
 import { NecrologyController } from '../mvc/controllers/NecrologyController.js';
-import { InteractionSession } from './Session/InteractionSession.js';
-import { EntrySession } from './Session/EntrySession.js';
+import { InteractionSession } from './Session/InteractionSession';
+import { EntrySession } from './Session/EntrySession';
 import { UserError } from './Error/UserError.js';
 
 export class Router {

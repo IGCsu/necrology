@@ -1,6 +1,6 @@
 import { ApplicationCommandOptionType } from 'discord.js';
 import { Lang } from '../models/Lang.js';
-import { Config } from '../models/Config.js';
+import { Config } from '../models/Config.ts';
 import { UserError } from '../../libs/Error/UserError.js';
 import { ConfigView } from '../view/ConfigView.js';
 import { InvalidArgumentError } from '../../libs/Error/InvalidArgumentError.js';
@@ -100,7 +100,7 @@ export class ConfigController {
 		let options = [];
 		let choices = [];
 
-		for (const key in Config.elements) {
+		for (const key in Config.configElementMap) {
 			const element = Config.getElement(key);
 			choices.push({
 				name: element.name,
@@ -164,14 +164,6 @@ export class ConfigController {
 				break;
 			default:
 				preparedValue = value;
-		}
-
-		if (
-			preparedValue === undefined
-			|| preparedValue === null
-			|| (isNumberType && isNaN(preparedValue))
-		) {
-			throw new UserError('Value is invalid');
 		}
 
 		await element.validateValue(preparedValue);

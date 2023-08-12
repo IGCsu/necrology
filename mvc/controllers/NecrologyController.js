@@ -1,5 +1,5 @@
-import { Action } from '../models/Action.js';
-import { Utils } from '../../libs/Utils.js';
+import { Action } from '../models/Action.ts';
+import { Utils } from '../../libs/Utils.ts';
 import { NecrologyView } from '../view/NecrologyView.js';
 
 export class NecrologyController {

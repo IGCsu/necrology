@@ -1,0 +1,105 @@
+import { ru } from '../langs/ru';
+import { InvalidArgumentError } from './Error/InvalidArgumentError';
+
+/** Код локализации ISO 639-1 */
+export type LangCode = string;
+
+/** Ключ для получения локализированного текста */
+export type LangKey = string;
+
+/** Локализированный текст */
+export type LangText = LangKey | string;
+
+export interface LangData {
+	[key: LangKey]: LangText;
+}
+
+export interface LangMap {
+	[key: LangCode]: Lang;
+}
+
+export interface LangPostfixMap {
+	[key: LangCode]: LangCode[];
+}
+
+export interface LangDiscordFormat {
+	[key: LangCode]: LangText;
+}
+
+export class Lang {
+
+	protected static readonly list: LangMap = {
+		ru: new Lang('ru', ru)
+	};
+
+	public static readonly RU_LANG: LangCode = 'ru';
+	public static readonly EN_LANG: LangCode = 'ru';
+	public static readonly DEFAULT_LANG: LangCode = this.RU_LANG;
+
+	/**
+	 * В локализации Дискорда, некоторые языки имеют дополнительные коды, которые
+	 * добавляются при конвертировании
+	 */
+	public static readonly LANG_POSTFIX: LangPostfixMap = {
+		en: ['GB', 'US'],
+		es: ['ES'],
+		pt: ['BR'],
+		sv: ['SE'],
+		zh: ['CN', 'TW']
+	};
+
+	protected locale: LangCode;
+	protected data: LangData;
+
+	public constructor (locale: LangCode, data: LangData) {
+		this.locale = locale;
+		this.data = data;
+	}
+
+	/** Возвращаем ленг */
+	public static get (locale: LangCode = this.DEFAULT_LANG): Lang {
+		if (locale.length !== 2) {
+			locale = locale.substring(0, 2);
+		}
+
+		if (!Lang.list[locale]) {
+			throw new InvalidArgumentError('Locale "' + locale + '" not found');
+		}
+
+		return Lang.list[locale];
+	}
+
+	/** Проверяем существование ленга */
+	public static has (locale: LangCode): boolean {
+		return !!Lang.list[locale];
+	}
+
+	/** Возвращает локализованный текст */
+	public static getText (key: LangKey, locale: LangCode = this.DEFAULT_LANG): LangText {
+		return Lang.get(locale).str(key);
+	}
+
+	/** Формирует объект локализированных текстов для Дискорда */
+	public static toDiscord (key: LangKey): LangDiscordFormat {
+		let result: LangDiscordFormat = {};
+
+		for (let locale in this.list) {
+			if (Lang.LANG_POSTFIX.hasOwnProperty(locale)) {
+				const text = this.getText(key, locale);
+				for (const postfix of Lang.LANG_POSTFIX[locale]) {
+					result[locale + '-' + postfix] = text;
+				}
+			} else {
+				result[locale] = this.getText(key, locale);
+			}
+		}
+
+		return result;
+	}
+
+	/** Возвращает локализованный текст */
+	public str (key: LangKey): LangText {
+		return this.data[key] ?? Lang.getText(key) ?? key;
+	}
+
+}

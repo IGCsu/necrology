@@ -1,4 +1,4 @@
-import { Config } from '../models/Config.js';
+import { Config } from '../models/Config.ts';
 import { ApplicationCommandOptionType, EmbedBuilder } from 'discord.js';
 
 export class ConfigView {
@@ -11,7 +11,7 @@ export class ConfigView {
 	static index (s) {
 		let desc = s._('Config index desc') + '\n';
 
-		for (const key in Config.elements) {
+		for (const key in Config.configElementMap) {
 			const element = Config.getElement(key);
 			let text = '';
 

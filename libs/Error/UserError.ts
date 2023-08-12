@@ -1,5 +1,5 @@
-import { EmbedBuilder } from 'discord.js';
-import { Const } from '../Const.js';
+import { Colors, EmbedBuilder } from 'discord.js';
+import { InteractionSession } from '../Session/InteractionSession';
 
 /**
  * Ошибка, которую мы кидаем, когда юзер хотим прервать работу скрипта
@@ -7,16 +7,13 @@ import { Const } from '../Const.js';
  */
 export class UserError extends Error {
 
-	/**
-	 * Отправляет сообщение с ошибкой
-	 * @param {InteractionSession} s
-	 * @return {Promise<void>}
-	 */
-	async sendErrorMessage (s) {
+	public cause!: Error;
+
+	public async sendErrorMessage (s: InteractionSession) {
 		let embed = new EmbedBuilder();
 
 		embed.setDescription(s._(this.message));
-		embed.setColor(Const.COLOR_RED);
+		embed.setColor(Colors.DarkRed);
 
 		const message = {
 			embeds: [embed],

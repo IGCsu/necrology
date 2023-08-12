@@ -1,4 +1,4 @@
-import { CommandRepository } from '../../libs/CommandRepository.js';
+import { CommandRepository } from '../../libs/CommandRepository.ts';
 import { EmbedBuilder } from 'discord.js';
 
 export class HelpView {

@@ -1,7 +1,6 @@
 import { EmbedBuilder } from 'discord.js';
-import { Action } from '../models/Action.js';
-import { Utils } from '../../libs/Utils.js';
-import { Const } from '../../libs/Const.js';
+import { Action } from '../models/Action.ts';
+import { Utils } from '../../libs/Utils.ts';
 
 export class NecrologyView {
 

@@ -1,5 +1,5 @@
 import { HelpView } from '../view/HelpView.js';
-import { InteractionSession } from '../../libs/Session/InteractionSession.js';
+import { InteractionSession } from '../../libs/Session/InteractionSession';
 
 export class HelpController {
 
